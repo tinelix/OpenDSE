@@ -1,0 +1,13 @@
+out/
+*.h~
+*.c~
+*.mak~
+*.dll
+*.lib
+*.exp
+*.obj
+*.vcp
+*.pdb
+*.pch
+*.o
+*.so
