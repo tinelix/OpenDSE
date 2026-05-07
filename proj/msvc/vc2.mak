@@ -1,6 +1,6 @@
 PROJECT         = opendse
 
-DSE_LIB_ROOT    = ..
+DSE_LIB_ROOT    = ..\..
 
 INC_DIR         = $(DSE_LIB_ROOT)\include
 SRC_DIR         = $(DSE_LIB_ROOT)\src
@@ -8,8 +8,8 @@ DEF_DIR         = $(DSE_LIB_ROOT)\def
 RES_DIR         = $(DSE_LIB_ROOT)\res
 
 
-BIN_DIR         = $(DSE_LIB_ROOT)\out\library\bin
-OBJ_DIR         = $(DSE_LIB_ROOT)\out\library\obj
+BIN_DIR         = $(DSE_LIB_ROOT)\out\bin
+OBJ_DIR         = $(DSE_LIB_ROOT)\out\obj
 
 C_FLAGS         = -MT -W3 -GX -Zi -YX -Od
 
@@ -18,7 +18,7 @@ C_FLAGS         = -Z7 -DDEBUG
 LD_FLAGS        = -debug -pdb:none
 !endif
 
-LD_FLAGS        = -dll -def:$(DEF_DIR)\crocon.def
+LD_FLAGS        = -dll -def:$(DEF_DIR)\opendse.def
 
 CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DOPENDSE_LIB -DCROC_STATIC_BUILD -DWIN32 -DWINDOWS
 CC_FLAGS_DLL    = $(C_FLAGS) -I$(INC_DIR)
@@ -27,13 +27,10 @@ CC_LIBS         = user32.lib
 CC              = cl -nologo
 LINKER          = link.exe -nologo
 
-CROCON_LIBS     = $(BIN_DIR)\opendse.lib
+OPENDSE_LIBS     = $(BIN_DIR)\opendse.lib
 
-OBJECTS         = $(OBJ_DIR)\dsewin32.obj \
-                  $(OBJ_DIR)\dsescrn.obj \
-                  $(OBJ_DIR)\dseclrs.obj \
-                  $(OBJ_DIR)\window.obj \
-                  $(OBJ_DIR)\crocon.obj
+OBJECTS          = $(OBJ_DIR)\dsewin32.obj \
+                   $(OBJ_DIR)\opendse.obj
 
 all: prepare $(BIN_DIR)\$(PROJECT).dll
 
@@ -47,12 +44,15 @@ $(BIN_DIR)\$(PROJECT).dll: $(OBJECTS)
 {$(SRC_DIR)\os\win32}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@
 
-{$(SRC_DIR)\widgets}.c{$(OBJ_DIR)}.obj:
+{$(SRC_DIR)\decoders}.c{$(OBJ_DIR)}.obj:
+    $(CC) $(CC_FLAGS) -c $< -Fo$@
+
+{$(SRC_DIR)\parsers}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@
 
 prepare:
-    @if not exist $(CROCON_ROOT)\out mkdir $(DSE_LIB_ROOT)\out
-    @if not exist $(CROCON_ROOT)\out\library mkdir $(DSE_LIB_ROOT)\out\library
+    @if not exist $(DSE_LIB_ROOT)\out mkdir $(DSE_LIB_ROOT)\out
+    @if not exist $(DSE_LIB_ROOT)\out\library mkdir $(DSE_LIB_ROOT)\out\library
     @if not exist $(OBJ_DIR) mkdir $(OBJ_DIR)
 
 clean:

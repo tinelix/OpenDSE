@@ -31,29 +31,22 @@ if NOT "%OPENDSE_DEBUG%"=="" IF NOT "%2"=="" (
 
 echo.
 
-if "%CROCON_DEBUG%"=="" IF "%2"=="" (
+if "%OPENDSE_DEBUG%"=="" IF "%2"=="" (
 	echo [1/2] Building OpenDSE from source...
 ) else (
 	echo [1/2] Building OpenDSE with debug symbols from source...
 )
 
-cd ..\library\proj\msvc
+cd ..\proj\msvc
 nmake -nologo -f %OPENDSE_CC_TARGET%.mak
 
-cd ..\..\..
-
-echo.
-echo [2/2] Building Crocon Demos...
-
-cd demos\barebns1\proj\msvc
-nmake -nologo -f %OPENDSE_CC_TARGET%.mak CROCON_ROOT=..\..\..\..
 echo.
 echo Done!
 
-cd ..\..\..\..\build
+cd ..\..\build
 
 set DEBUG=
-set CROCON_DEBUG=
+set OPENDSE_DEBUG=
 
 echo.
 
