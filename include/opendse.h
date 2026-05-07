@@ -5,7 +5,7 @@
 #include <mmio/mmio.h>
 
 #ifdef OPENDSE_LIB
-	extern DSE_MMIO* stdmmio;	
+	extern DSE_MMIO* stdmmio;
 #else
 	#ifdef UNIX
 		DSE_MMIO* stdmmio;
