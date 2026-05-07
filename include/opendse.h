@@ -5,7 +5,7 @@
 #include <mmio/mmio.h>
 
 #ifdef OPENDSE_LIB
-	extern DSE_MMIO* stdmmio;
+	extern DSE_MMIO* stdmmio;	
 #else
 	#ifdef UNIX
 		DSE_MMIO* stdmmio;
@@ -19,5 +19,7 @@ typedef struct _dse_version {
 	int minor;
 	int patch;
 } DSEVERSION;
+
+int dse_open_input(const char* path);
 
 #endif

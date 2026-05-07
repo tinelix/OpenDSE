@@ -1,4 +1,4 @@
 LIBRARY				"OpenDSE"
 
 EXPORTS 
-	dse_mmio_open
+	dse_open_input

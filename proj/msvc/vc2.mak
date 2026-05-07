@@ -29,7 +29,9 @@ LINKER          = link.exe -nologo
 
 OPENDSE_LIBS     = $(BIN_DIR)\opendse.lib
 
-OBJECTS          = $(OBJ_DIR)\dsewin32.obj \
+OBJECTS          = $(OBJ_DIR)\mmio.obj \
+		   $(OBJ_DIR)\parser.obj \
+		   $(OBJ_DIR)\dsewin32.obj \
                    $(OBJ_DIR)\opendse.obj
 
 all: prepare $(BIN_DIR)\$(PROJECT).dll
@@ -41,10 +43,13 @@ $(BIN_DIR)\$(PROJECT).dll: $(OBJECTS)
 {$(SRC_DIR)}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@
 
-{$(SRC_DIR)\os\win32}.c{$(OBJ_DIR)}.obj:
+{$(SRC_DIR)\decoders}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@
 
-{$(SRC_DIR)\decoders}.c{$(OBJ_DIR)}.obj:
+{$(SRC_DIR)\mmio}.c{$(OBJ_DIR)}.obj:
+    $(CC) $(CC_FLAGS) -c $< -Fo$@
+
+{$(SRC_DIR)\os\win32}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@
 
 {$(SRC_DIR)\parsers}.c{$(OBJ_DIR)}.obj:

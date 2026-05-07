@@ -1,31 +1,24 @@
-#include <opendse.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-//DSE_MEDIAIO* 	dse_mmio;
-FILE* 			dse_lfile;
-unsigned char*  dse_inbuf;
-int				szFramebuf;
+#include <opendse.h>
+#include <mmio/mmio.h>
+#include <parsers/parser.h>
 
-int dse_mmio_open(const char* path) {
+DSE_MMIO* 		stdmmio;
+
+int dse_open_input(const char* path) {
 	
 	int result = 0;
 	
-	#ifdef MSVC_GE_800
-		fopen_s(&dse_lfile, path, "rb");
-	#else
-		dse_lfile = fopen(path, "rb");
-	#endif
+	result = dse_mmio_open(stdmmio, path);
 
-	if(!dse_inbuf)
-		return -1;
+	if(result > 0) {
+		
+		uchar_t* inbuf = ((DSE_IMMIO*)stdmmio->_i)->inbuf;
+		
+		result = dse_parse_input(inbuf);
+	}
 
-	szFramebuf = 4096;
-
-	dse_inbuf = (unsigned char*) 
-			malloc((szFramebuf * sizeof(unsigned char)) + 1);
-
-	//result = dse_parse_input(dse_inbuf);
-
-	return result;
+	return result;	
 }
