@@ -13,13 +13,12 @@ OBJ_DIR         = $(DSE_LIB_ROOT)\..\out\library\obj
 
 C_FLAGS         = -MT -W3 -EHsc -Zi -Od
 
+LD_FLAGS        = -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
+
 !ifdef DEBUG
     C_FLAGS     = -Z7 -DDEBUG
-    LD_FLAGS    = -debug -pdb:none
+    LD_FLAGS    = -debug -pdb:none -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
 !endif
-
-
-LD_FLAGS        = -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
 
 CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DCROC_STATIC_BUILD -DOPENDSE_LIB -DMSVC_GE_800 -DWIN32 -DWINDOWS
 CC_FLAGS_DLL    = $(C_FLAGS) -I$(INC_DIR)

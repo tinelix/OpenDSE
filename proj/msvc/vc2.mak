@@ -13,12 +13,12 @@ OBJ_DIR         = $(DSE_LIB_ROOT)\out\obj
 
 C_FLAGS         = -MT -W3 -GX -Zi -YX -Od
 
+LD_FLAGS        = -dll -def:$(DEF_DIR)\opendse.def
+
 !ifdef DEBUG
 C_FLAGS         = -Z7 -DDEBUG
-LD_FLAGS        = -debug -pdb:none
+LD_FLAGS        = -debug -pdb:none -dll -def:$(DEF_DIR)\opendse.def
 !endif
-
-LD_FLAGS        = -dll -def:$(DEF_DIR)\opendse.def
 
 CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DOPENDSE_LIB -DCROC_STATIC_BUILD -DWIN32 -DWINDOWS
 CC_FLAGS_DLL    = $(C_FLAGS) -I$(INC_DIR)
@@ -30,9 +30,9 @@ LINKER          = link.exe -nologo
 OPENDSE_LIBS     = $(BIN_DIR)\opendse.lib
 
 OBJECTS          = $(OBJ_DIR)\mmio.obj \
-		   $(OBJ_DIR)\parser.obj \
-		   $(OBJ_DIR)\riffpars.obj \
-		   $(OBJ_DIR)\dsewin32.obj \
+                   $(OBJ_DIR)\parser.obj \
+                   $(OBJ_DIR)\riffpars.obj \
+                   $(OBJ_DIR)\dsewin32.obj \
                    $(OBJ_DIR)\opendse.obj
 
 all: prepare $(BIN_DIR)\$(PROJECT).dll
