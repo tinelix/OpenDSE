@@ -23,7 +23,13 @@ if "%OPENDSE_DEBUG%"=="" IF "%2"=="" (
 	set /P OPENDSE_DEBUG=Include debug symbols before building? [y, n]: 
 )
 
-if NOT "%OPENDSE_DEBUG%"=="" IF NOT "%2"=="" (
+if NOT "%OPENDSE_DEBUG%"=="" (
+	set DEBUG=1
+) else (
+	set DEBUG=
+)
+
+if NOT "%2"=="" (
 	set DEBUG=1
 ) else (
 	set DEBUG=
@@ -38,7 +44,7 @@ if "%OPENDSE_DEBUG%"=="" IF "%2"=="" (
 )
 
 cd ..\proj\msvc
-nmake -nologo -f %OPENDSE_CC_TARGET%.mak
+nmake -nologo -f %OPENDSE_CC_TARGET%.mak DEBUG=%DEBUG%
 
 echo.
 echo Done!
