@@ -2,7 +2,7 @@
 #define _OPENDSE_MMIO_MMIO_H
 
 #include <stdio.h>
-#include <utils/c_exts.h>
+#include "../utils/c_exts.h"
 
 typedef enum {
 	DSE_PROTOCOL_FILE,

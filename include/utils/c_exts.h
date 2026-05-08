@@ -29,8 +29,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _OPENDSE_C_EXTS
-#define _OPENDSE_C_EXTS
+#ifndef _TINELIX_C_EXTS
+#define _TINELIX_C_EXTS
 
 typedef enum {false, true} bool;
 

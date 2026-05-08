@@ -1,11 +1,11 @@
 #ifndef _OPENDSE_OPENDSE_H
 #define _OPENDSE_OPENDSE_H
 
-#include <utils/c_exts.h>
-#include <mmio/mmio.h>
+#include "utils/c_exts.h"
+#include "mmio/mmio.h"
 
 #ifdef OPENDSE_LIB
-	extern DSE_MMIO* stdmmio;	
+	extern DSE_MMIO* stdmmio;
 #else
 	#ifdef UNIX
 		DSE_MMIO* stdmmio;
