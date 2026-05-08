@@ -31,6 +31,7 @@ OPENDSE_LIBS     = $(BIN_DIR)\opendse.lib
 
 OBJECTS          = $(OBJ_DIR)\mmio.obj \
 		   $(OBJ_DIR)\parser.obj \
+		   $(OBJ_DIR)\riffpars.obj \
 		   $(OBJ_DIR)\dsewin32.obj \
                    $(OBJ_DIR)\opendse.obj
 
@@ -57,7 +58,6 @@ $(BIN_DIR)\$(PROJECT).dll: $(OBJECTS)
 
 prepare:
     @if not exist $(DSE_LIB_ROOT)\out mkdir $(DSE_LIB_ROOT)\out
-    @if not exist $(DSE_LIB_ROOT)\out\library mkdir $(DSE_LIB_ROOT)\out\library
     @if not exist $(OBJ_DIR) mkdir $(OBJ_DIR)
 
 clean:

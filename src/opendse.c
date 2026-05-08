@@ -17,7 +17,7 @@ int dse_open_input(const char* path) {
 		
 		uchar_t* inbuf = ((DSE_IMMIO*)stdmmio->_i)->inbuf;
 		
-		result = dse_parse_input(inbuf);
+		result = dse_parse_input(stdmmio, inbuf);
 	}
 
 	return result;	
