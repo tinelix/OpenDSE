@@ -7,26 +7,23 @@ int	szFramebuf = 4096;
 
 int dse_mmio_open(DSE_MMIO* mmio, const char* path) {
 	
-	uchar_t* buffer;
-
-	mmio = (DSE_MMIO*)malloc(sizeof(DSE_MMIO));
-	
 	#ifdef MSVC_GE_800
 		fopen_s(&mmio->filesrc, path, "rb");
 	#else
 		mmio->filesrc = fopen(path, "rb");
 	#endif
 
+	if(!mmio->filesrc)
+		return -1;
+
 	mmio->_i = (DSE_IMMIO*)malloc(sizeof(DSE_IMMIO));
 
-	buffer = ((DSE_IMMIO*)mmio->_i)->inbuf;
+	mmio->_i->inbuf = (uchar_t*) malloc((szFramebuf * sizeof(uchar_t)) + 1);
 
-	buffer = (uchar_t*) malloc((szFramebuf * sizeof(uchar_t)) + 1);
-
-	if(!buffer)
+	if(!mmio->_i->inbuf)
 		return -1;
 	
-	mmio->bytes_read = fread(&buffer, 1, szFramebuf, mmio->filesrc);
+	mmio->bytes_read = fread(mmio->_i->inbuf, 1, szFramebuf, mmio->filesrc);
 	
 	if(mmio->bytes_read <= 0) {
 		fclose(mmio->filesrc);

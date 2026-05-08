@@ -7,7 +7,7 @@
 #include <utils/c_exts.h>
 
 #define MKMAGIC32(uc1, uc2, uc3, uc4) \
-	(uc1 | (uc2 << 8) | (uc3 << 16) | (uc4 << 24)) 
+	(uc4 | (uc3 << 8) | (uc2 << 16) | (uc1 << 24)) 
 
 typedef struct _dse_mediafmt_priv {
 	const uint_t magic_nums;

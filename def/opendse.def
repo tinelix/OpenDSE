@@ -2,3 +2,4 @@ LIBRARY				"OpenDSE"
 
 EXPORTS 
 	dse_open_input
+	stdmmio
