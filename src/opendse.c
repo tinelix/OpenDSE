@@ -20,5 +20,5 @@ int dse_open_input(const char* path) {
 		result = dse_parse_input(stdmmio, inbuf);
 	}
 
-	return result;	
+	return result;
 }

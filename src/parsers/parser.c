@@ -9,5 +9,5 @@ int dse_parse_input(DSE_MMIO* mmio, uchar_t* inbuf) {
 		dse_riff_parse(mmio, inbuf);
 	}
 
-	return 0;			
+	return 0;
 }

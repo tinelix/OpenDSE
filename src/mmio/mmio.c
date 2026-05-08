@@ -6,7 +6,7 @@
 int	szFramebuf = 4096;
 
 int dse_mmio_open(DSE_MMIO* mmio, const char* path) {
-		
+	
 	uchar_t* buffer;
 
 	mmio = (DSE_MMIO*)malloc(sizeof(DSE_MMIO));
