@@ -29,6 +29,13 @@ int dse_mmio_open(DSE_MMIO* mmio, const char* path) {
 		fclose(mmio->filesrc);
 		return -2;
 	}
+
+	if(fseek(mmio->filesrc, 0, SEEK_END) != 0) {
+	 	fclose(mmio->filesrc);
+		return -3;
+	}
+
+	mmio->bytes_total = ftell(mmio->filesrc);
 	
 	return mmio->bytes_read;  
 }

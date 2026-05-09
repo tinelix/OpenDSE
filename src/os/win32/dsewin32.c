@@ -34,14 +34,35 @@
 #include <windows.h>
 #include <os/win32/dsewin32.h>
 
+#ifdef WIN32_MME
+	HWAVEOUT hWaveOut;
+#endif
+
 int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 	return TRUE;
 }
 
 int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	#ifdef WIN32_MME
-		_dse_open_waveout(outdev, mmio);
+		_dse_waveout_open(outdev, mmio);
 	#endif		
 }
 
+int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
+	
+	uchar_t* inbuf       = mmio->_i->inbuf;	
+	uint_t   sample_size = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
+
+	#ifdef WIN32_MME
+		_dse_waveout_allocate(1024, sample_size, 32);
+	#endif
+
+	mmio->bytes_read += fread(inbuf, offset, count, mmio->filesrc);
+
+	#ifdef WIN32_MME
+		_dse_waveout_write((LPSTR)inbuf, count);
+	#endif
+}
+
 #endif
+

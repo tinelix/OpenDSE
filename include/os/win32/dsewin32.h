@@ -7,7 +7,11 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
-#include <mmsystem.h>
+
+#ifdef WIN32_MME
+	#include <mmsystem.h>
+	#include "waveout.h"
+#endif
 
 int _dse_outdev_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
 

@@ -40,3 +40,18 @@ int dse_close_input() {
 
 	return result;
 }
+
+int dse_decode_audio() {
+	_dse_decode_audio(stdmmio, 0, stdmmio->bytes_total);
+	return 0;
+}
+
+int dse_decode_audio2(ulong_t offset) {
+	_dse_decode_audio(stdmmio, offset, stdmmio->bytes_total);
+	return 0; 
+}
+
+int dse_decode_audio3(uint_t offset, ulong_t count) {
+	_dse_decode_audio(stdmmio, offset, count);
+	return 0; 
+}

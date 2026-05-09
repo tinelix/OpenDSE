@@ -29,7 +29,8 @@ typedef struct _dse_audiofmt {
 typedef struct dse_mmio {
 	FILE*           filesrc;
 	const char*     path;
-	size_t          bytes_read;
+	ulong_t         bytes_read;
+	ulong_t			bytes_total;
 	bool            opened;
 	bool            playing;
 	bool            paused;
