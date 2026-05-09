@@ -5,9 +5,9 @@
 static CRITICAL_SECTION wavSection;
 static WAVEHDR*     	wavFrames;
 static volatile ulong_t wavFreeFrameCount;
-static int          	wavCurrentFrame;
-       uint_t			wavFrameSize 		= 1024;	
-       uint_t			wavFramesCount 		= 32;		  
+static int              wavCurrentFrame;
+       uint_t           wavFrameSize        = 1024;	
+       uint_t           wavFramesCount      = 32;
 
 int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	
@@ -121,7 +121,7 @@ void _dse_waveout_write(LPSTR data, int size) {
 	}
 }
 
-void _dse_waveout_process(
+void CALLBACK _dse_waveout_process(
 	HWAVEOUT hWaveOut,
 	uint_t msg_code, ulong_t instance, ulong_t param1, ulong_t param2
 ) {
