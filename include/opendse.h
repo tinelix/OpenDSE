@@ -2,7 +2,13 @@
 #define _OPENDSE_OPENDSE_H
 
 #include "utils/c_exts.h"
+
+// Mutlimedia I/O
 #include "mmio/mmio.h"
+
+// I/O devies
+#include "devices/indev.h"
+#include "devices/outdev.h"
 
 #ifdef OPENDSE_LIB
 	extern DSE_MMIO* stdmmio;

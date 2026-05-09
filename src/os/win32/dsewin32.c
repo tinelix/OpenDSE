@@ -1,7 +1,6 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2026, CroconTUI Project
  * Copyright (c) 2026, Dmitry Tretyakov
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,9 +32,16 @@
 #ifdef WIN32
 
 #include <windows.h>
+#include <os/win32/dsewin32.h>
 
 int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 	return TRUE;
+}
+
+int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
+	#ifdef WIN32_MME
+		_dse_open_waveout(outdev, mmio);
+	#endif		
 }
 
 #endif

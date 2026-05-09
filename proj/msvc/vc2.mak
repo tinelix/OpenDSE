@@ -20,9 +20,9 @@ C_FLAGS         = -Z7 -DDEBUG
 LD_FLAGS        = -debug -pdb:none -dll -def:$(DEF_DIR)\opendse.def
 !endif
 
-CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DOPENDSE_LIB -DCROC_STATIC_BUILD -DWIN32 -DWINDOWS
+CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DOPENDSE_LIB -DOPENDSE_STATIC_BUILD -DWIN32 -DWINDOWS -DWIN32_MME
 CC_FLAGS_DLL    = $(C_FLAGS) -I$(INC_DIR)
-CC_LIBS         = user32.lib
+CC_LIBS         = user32.lib winmm.lib
 
 CC              = cl -nologo
 LINKER          = link.exe -nologo
@@ -32,6 +32,7 @@ OPENDSE_LIBS     = $(BIN_DIR)\opendse.lib
 OBJECTS          = $(OBJ_DIR)\mmio.obj \
                    $(OBJ_DIR)\parser.obj \
                    $(OBJ_DIR)\riffpars.obj \
+		   $(OBJ_DIR)\waveout.obj \
                    $(OBJ_DIR)\dsewin32.obj \
                    $(OBJ_DIR)\opendse.obj
 
@@ -39,7 +40,7 @@ all: prepare $(BIN_DIR)\$(PROJECT).dll
 
 $(BIN_DIR)\$(PROJECT).dll: $(OBJECTS)
     @if not exist $(BIN_DIR) mkdir $(BIN_DIR)
-    $(LINKER) $(LD_FLAGS) -out:$@ $**
+    $(LINKER) $(LD_FLAGS) $(CC_LIBS) -out:$@ $**
 
 {$(SRC_DIR)}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@

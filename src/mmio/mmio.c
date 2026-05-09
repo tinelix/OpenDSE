@@ -32,3 +32,16 @@ int dse_mmio_open(DSE_MMIO* mmio, const char* path) {
 	
 	return mmio->bytes_read;  
 }
+
+int dse_mmio_close(DSE_MMIO* mmio) {
+	if(!mmio)
+		return -1;
+
+	free(mmio->_i->inbuf);
+	mmio->_i->inbuf = NULL;
+	
+	free(mmio->_i);
+	mmio->_i = NULL;
+
+	fclose(mmio->filesrc);
+}

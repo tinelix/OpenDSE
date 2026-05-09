@@ -16,7 +16,7 @@ typedef enum {
 } mmio_proto_t;
 
 typedef struct _dse_audiofmt {
-	char*    	codec_id;
+	uint_t    	codec_id;
 	const char* str_id;
 	uint_t   	sample_rate;
 	uchar_t  	bit_depth;
@@ -43,5 +43,6 @@ typedef struct dse_mmio {
 } DSE_MMIO;
 
 int dse_mmio_open(DSE_MMIO* mmio, const char* path);
+int dse_mmio_close(DSE_MMIO* mmio);
 
 #endif
