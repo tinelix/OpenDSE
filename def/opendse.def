@@ -2,4 +2,8 @@ LIBRARY				"OpenDSE"
 
 EXPORTS 
 	dse_open_input
+	dse_close_input
+	dse_decode_audio
+	dse_decode_audio2
+	dse_decode_audio3
 	stdmmio

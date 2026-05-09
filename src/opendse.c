@@ -51,7 +51,7 @@ int dse_decode_audio2(ulong_t offset) {
 	return 0; 
 }
 
-int dse_decode_audio3(uint_t offset, ulong_t count) {
+int dse_decode_audio3(ulong_t offset, ulong_t count) {
 	_dse_decode_audio(stdmmio, offset, count);
 	return 0; 
 }
