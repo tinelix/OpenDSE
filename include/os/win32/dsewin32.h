@@ -14,5 +14,7 @@
 #endif
 
 int _dse_outdev_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
+//int _dse_outdev_write(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
+int _dse_outdev_close(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
 
 #endif

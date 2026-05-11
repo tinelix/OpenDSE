@@ -34,34 +34,48 @@
 #include <windows.h>
 #include <os/win32/dsewin32.h>
 
-#ifdef WIN32_MME
-	HWAVEOUT hWaveOut;
-#endif
-
 int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 	return TRUE;
 }
 
 int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	#ifdef WIN32_MME
-		_dse_waveout_open(outdev, mmio);
+		return _dse_waveout_open(outdev, mmio);
 	#endif		
 }
 
 int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 	
-	uchar_t* inbuf       = mmio->_i->inbuf;	
-	uint_t   sample_size = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
+	uchar_t* inbuf        = mmio->_i->inbuf;	
+	uint_t   sample_size  = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
+	uint_t   frame_size   = 1024 * sample_size;
+	uint_t   buffer_size  = frame_size * 32;
 
+	_dse_waveout_allocate(1024, sample_size, 32);
+
+	while(count <= mmio->bytes_total) {
+		
+		mmio->bytes_read += fread(inbuf, 1, frame_size, mmio->filesrc);
+
+		#ifdef WIN32_MME
+			_dse_waveout_write((LPSTR)((char*)inbuf), frame_size);
+		#endif
+		offset += frame_size;
+		count  -= frame_size;
+		fseek(mmio->filesrc, offset, SEEK_SET);
+		free(inbuf);
+	}
+
+	_dse_waveout_free();
+
+
+}
+
+
+int _dse_close_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	#ifdef WIN32_MME
-		_dse_waveout_allocate(1024, sample_size, 32);
-	#endif
-
-	mmio->bytes_read += fread(inbuf, offset, count, mmio->filesrc);
-
-	#ifdef WIN32_MME
-		_dse_waveout_write((LPSTR)inbuf, count);
-	#endif
+		return _dse_waveout_close(outdev, mmio);
+	#endif		
 }
 
 #endif

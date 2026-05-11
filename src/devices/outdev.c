@@ -1,4 +1,4 @@
-#include <outdev.h>
+#include <devices/outdev.h>
 #include <opendse.h>
 #include <dsepriv.h>
 
@@ -7,7 +7,7 @@ int dse_open_outdev(DSE_OUTDEV* outdev) {
 }
 
 int dse_write_outdev(uchar_t* buffer, int size) {
-	return _dse_write_outdev(buffer, size);
+	//return _dse_write_outdev(buffer, size);
 }
 
 int dse_close_outdev(DSE_OUTDEV* outdev) {

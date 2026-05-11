@@ -29,10 +29,11 @@ LINKER          = link.exe -nologo
 
 OPENDSE_LIBS     = $(BIN_DIR)\opendse.lib
 
-OBJECTS          = $(OBJ_DIR)\mmio.obj \
+OBJECTS          = $(OBJ_DIR)\outdev.obj \
+                   $(OBJ_DIR)\mmio.obj \
                    $(OBJ_DIR)\parser.obj \
                    $(OBJ_DIR)\riffpars.obj \
-		   $(OBJ_DIR)\waveout.obj \
+		           $(OBJ_DIR)\waveout.obj \
                    $(OBJ_DIR)\dsewin32.obj \
                    $(OBJ_DIR)\opendse.obj
 
@@ -43,6 +44,9 @@ $(BIN_DIR)\$(PROJECT).dll: $(OBJECTS)
     $(LINKER) $(LD_FLAGS) $(CC_LIBS) -out:$@ $**
 
 {$(SRC_DIR)}.c{$(OBJ_DIR)}.obj:
+    $(CC) $(CC_FLAGS) -c $< -Fo$@
+
+{$(SRC_DIR)\devices}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@
 
 {$(SRC_DIR)\decoders}.c{$(OBJ_DIR)}.obj:

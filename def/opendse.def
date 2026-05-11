@@ -3,6 +3,9 @@ LIBRARY				"OpenDSE"
 EXPORTS 
 	dse_open_input
 	dse_close_input
+	dse_open_outdev
+	dse_write_outdev
+	dse_close_outdev
 	dse_decode_audio
 	dse_decode_audio2
 	dse_decode_audio3
