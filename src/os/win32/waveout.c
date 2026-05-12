@@ -181,8 +181,13 @@ void _dse_waveout_write2(LPSTR data) {
 
 	current_frame->dwBufferLength = wavFrameSize;
 
-	if(current_frame->dwFlags & WHDR_PREPARED)
-		waveOutUnprepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
+	waveOutUnprepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
+		
+	if(size < (int)(wavFrameSize - current_frame->dwUser)) {
+		memcpy(current_frame->lpData + current_frame->dwUser, data, sizeof(data));
+		current_frame->dwUser += size;
+		return;
+	}
 		
 	remain = wavFrameSize - current_frame->dwUser;
 		

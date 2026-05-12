@@ -33,5 +33,6 @@ int dse_decode_audio();
 int dse_decode_audio2(ulong_t offset);
 int dse_decode_audio3(ulong_t  offset, ulong_t count);
 int dse_free_audio();
+int dse_is_busy();
 
 #endif

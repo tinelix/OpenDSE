@@ -47,22 +47,27 @@ int dse_decode_audio() {
 }
 
 int dse_decode_audio2(ulong_t offset) {
-	_dse_decode_audio2(stdmmio, offset);
-	return 0; 
+	return _dse_decode_audio2(stdmmio, offset);
 }
 
 int dse_alloc_audio() {
 	int result;
 
 	result = _dse_alloc_audio(stdmmio);
-	return 0;
+	return result;
+}
+
+int dse_is_busy() {
+	int result = _dse_is_busy();
+
+	return result == true ? 0 : 1;	
 }
 
 int dse_free_audio() {
 	int result;
 
 	result = _dse_free_audio(stdmmio);
-	return 0;
+	return result;
 }
 
 float dse_get_frame_rms() {

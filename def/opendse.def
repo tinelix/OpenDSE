@@ -11,4 +11,5 @@ EXPORTS
 	dse_decode_audio3
 	dse_alloc_audio
 	dse_free_audio
+	dse_is_busy
 	stdmmio
