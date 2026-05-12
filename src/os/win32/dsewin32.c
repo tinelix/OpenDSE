@@ -145,7 +145,8 @@ int _dse_free_audio(DSE_MMIO* mmio) {
 }
 
 bool _dse_is_busy() {
-	return _dse_free_frames != _dse_frames_count;
+     _dse_free_frames = _dse_waveout_get_free_frames();
+	 return _dse_free_frames != _dse_frames_count ? false : true;
 }
 
 
