@@ -14,6 +14,9 @@
 #endif
 
 int _dse_outdev_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
+int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset);
+int _dse_alloc_audio(DSE_MMIO* mmio);
+int _dse_free_audio(DSE_MMIO* mmio);
 //int _dse_outdev_write(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
 int _dse_outdev_close(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
 

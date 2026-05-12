@@ -44,31 +44,113 @@ int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	#endif		
 }
 
+int _dse_alloc_audio(DSE_MMIO* mmio) {
+	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
+	uint_t   frame_samples = 1024;
+	uchar_t* inbuf         = mmio->_i->inbuf;
+
+	_dse_waveout_allocate(frame_samples, sample_size, 32);
+
+	inbuf                  = (uchar_t*)malloc(sample_size * sizeof(uchar_t));
+	return 0;
+}
+
 int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 	
-	uchar_t* inbuf        = mmio->_i->inbuf;	
-	uint_t   sample_size  = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
-	uint_t   frame_size   = 1024 * sample_size;
-	uint_t   buffer_size  = frame_size * 32;
+	uchar_t* inbuf         = mmio->_i->inbuf;
+	uint_t   frames_count  = 32;
+	uint_t   free_frames   = 32;	
+	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
+	uint_t   frame_samples = 1024;
+	uint_t   frame_size    = frame_samples * sample_size;
+	uint_t   buffer_size   = frame_size * frames_count;
 
-	_dse_waveout_allocate(1024, sample_size, 32);
+	if(count < buffer_size)
+		buffer_size = count;
+
+	_dse_waveout_allocate(frame_samples, sample_size, 32);
+
+	inbuf                       = (uchar_t*)malloc(buffer_size * sizeof(uchar_t));
+	mmio->_i->inbuf_size        = buffer_size;
+	mmio->audio.frame_samples   = frame_samples;
 
 	while(count <= mmio->bytes_total) {
 		
-		mmio->bytes_read += fread(inbuf, 1, frame_size, mmio->filesrc);
+		fseek(mmio->filesrc, offset, SEEK_SET);
+
+		while(free_frames < 31) {
+			Sleep(200);
+			free_frames = _dse_waveout_get_free_frames();
+
+			if(free_frames > 31) {
+			 	break;
+			}
+		}
+
+		mmio->bytes_read += fread(inbuf, 1, buffer_size, mmio->filesrc);
 
 		#ifdef WIN32_MME
-			_dse_waveout_write((LPSTR)((char*)inbuf), frame_size);
+			_dse_waveout_write((LPSTR)((char*)inbuf), buffer_size);
 		#endif
-		offset += frame_size;
-		count  -= frame_size;
-		fseek(mmio->filesrc, offset, SEEK_SET);
-		free(inbuf);
+
+		free_frames = _dse_waveout_get_free_frames();
+		
+		if(mmio->bytes_read < sizeof(inbuf)) {
+			memset(inbuf + mmio->bytes_read, 0, sizeof(inbuf) - mmio->bytes_read);
+		}
+
+		offset += buffer_size;
+		count  -= buffer_size;
 	}
 
+	free(inbuf);
+
 	_dse_waveout_free();
+}
 
+int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 
+	uchar_t* inbuf         = mmio->_i->inbuf;
+	uint_t   frames_count  = 32;
+	uint_t   free_frames   = 32;
+	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
+	uint_t   frame_samples = 1024;
+	uint_t   frame_size    = frame_samples * sample_size;
+
+	if(offset > mmio->bytes_total)
+		return -1;
+
+	free_frames = _dse_waveout_get_free_frames();
+
+	/*while(free_frames < 31) {
+		Sleep(100);
+		free_frames = _dse_waveout_get_free_frames();
+
+		if(free_frames > 31) {
+		 	break;
+		}
+	}*/
+	
+	fseek(mmio->filesrc, offset, SEEK_SET);
+
+	inbuf                       = (uchar_t*)malloc(sample_size * sizeof(uchar_t));
+	mmio->_i->inbuf_size        = frame_size;
+	mmio->audio.frame_samples   = frame_samples;
+
+	mmio->bytes_read += fread(inbuf, 1, frame_size, mmio->filesrc);
+
+	#ifdef WIN32_MME
+		_dse_waveout_write2((LPSTR)((char*)inbuf), frame_size);
+	#endif				
+}
+
+int _dse_free_audio(DSE_MMIO* mmio) {
+	uchar_t* inbuf         = mmio->_i->inbuf;
+	
+	free(inbuf);
+	_dse_waveout_free();
+	
+	return 0;
 }
 
 

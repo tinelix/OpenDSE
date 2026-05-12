@@ -22,8 +22,12 @@ typedef struct _dse_audiofmt {
 	uchar_t  	bit_depth;
 	ulong_t  	bitrate;
 	uchar_t  	channels;
+	double      frame_rate;
+	uint_t      frame_samples;
 	bool     	vbr;
 	bool     	joint_stereo;
+	bool        sbr;
+	bool        param_stereo;
 } DSE_AUDIOCODEC;
 
 typedef struct dse_mmio {

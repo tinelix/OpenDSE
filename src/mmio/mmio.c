@@ -35,6 +35,8 @@ int dse_mmio_open(DSE_MMIO* mmio, const char* path) {
 		return -3;
 	}
 
+	mmio->_i->inbuf_size = szFramebuf;
+
 	mmio->bytes_total = ftell(mmio->filesrc);
 	
 	return mmio->bytes_read;  

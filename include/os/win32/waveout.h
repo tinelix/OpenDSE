@@ -11,6 +11,8 @@ int      		_dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
 WAVEHDR* 		_dse_waveout_allocate(uint_t size, uint_t sample_size, uint_t count);
 void     		_dse_waveout_free();
 void     		_dse_waveout_write(LPSTR data, int size);
+void            _dse_waveout_write2(LPSTR data);
+ulong_t         _dse_waveout_get_free_frames();
 
 void CALLBACK   _dse_waveout_process(
 	         		HWAVEOUT hWaveOut,

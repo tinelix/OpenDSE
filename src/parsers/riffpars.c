@@ -6,6 +6,8 @@ int dse_riff_parse(DSE_MMIO* mmio, uchar_t* buffer) {
 	RIFF_HEADER header;
 	
 	memcpy(&header, buffer, sizeof(header));
+
+	free(mmio->_i->inbuf);
 		
 	if(header.overrall_size == 0)
 		return -2;

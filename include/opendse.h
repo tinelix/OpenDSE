@@ -28,8 +28,10 @@ typedef struct _dse_version {
 
 int dse_open_input(const char* path);
 int dse_close_input();
+int dse_alloc_audio();
 int dse_decode_audio();
 int dse_decode_audio2(ulong_t offset);
 int dse_decode_audio3(ulong_t  offset, ulong_t count);
+int dse_free_audio();
 
 #endif

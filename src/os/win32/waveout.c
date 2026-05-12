@@ -54,7 +54,7 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	result = waveOutOpen(
 		&hWaveOut, outdev->id, &wavFormat,
 		(ulong_t)_dse_waveout_process,
-		(ulong_t)wavFreeFrameCount,
+		(ulong_t*)&wavFreeFrameCount,
 		CALLBACK_FUNCTION
 	);
 
@@ -83,38 +83,38 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 
 WAVEHDR* _dse_waveout_allocate(uint_t size, uint_t sample_size, uint_t count) {
 	
+	uchar_t* buffer;
 	int      i;
-	int      result;
+	ulong_t  buffer_size;
 
-	wavFrameSize      = size * sample_size;
-	wavFramesCount    = count;
-	wavFreeFrameCount = count;
+	wavFrameSize = size * sample_size;
+	buffer_size  = (wavFrameSize + sizeof(WAVEHDR)) * count;
 
-	wavFrames = (WAVEHDR*)malloc(sizeof(WAVEHDR) * (count + 1));
-	
-	for(i = 0; i < count; i++) {
-		wavFrames[i].dwBufferLength  = wavFrameSize;
-		wavFrames[i].dwBytesRecorded = 0;
-		wavFrames[i].dwUser          = 0;
-		wavFrames[i].dwFlags         = 0;
-		wavFrames[i].lpNext          = NULL;
-		wavFrames[i].reserved        = 0;
-		wavFrames[i].lpData          = (LPSTR)malloc(wavFrameSize);
-		
-		result = waveOutPrepareHeader(hWaveOut, &wavFrames[i], sizeof(WAVEHDR));		
+	if((buffer = HeapAlloc(
+	      GetProcessHeap(), HEAP_ZERO_MEMORY, buffer_size
+	   )) == NULL) {
+		return NULL;   
 	}
+
+	wavFrames = (WAVEHDR*)buffer;
+	buffer += sizeof(WAVEHDR) * count;
+
+	for(i = 0; i < count; i++) {
+		wavFrames[i].dwBufferLength = wavFrameSize;
+		wavFrames[i].lpData = buffer;
+		buffer += wavFrameSize;
+	}
+	 
+
+	InitializeCriticalSection(&wavSection);
+
+	wavFreeFrameCount = count;
 
 	return wavFrames;
 }
 
 void _dse_waveout_free() {
-	int i = 0;
-	
-	for(i = 0; i < wavFramesCount; i++) {
-		waveOutUnprepareHeader(hWaveOut, &wavFrames[i], sizeof(WAVEHDR));
-		free(wavFrames[i].lpData);
-		free(wavFrames[i]);
-	}
+	HeapFree(GetProcessHeap, 0, wavFrames);
 }
 
 void _dse_waveout_write(LPSTR data, int size) {
@@ -123,36 +123,95 @@ void _dse_waveout_write(LPSTR data, int size) {
 	int remain;
 	int result = 0;
 	int bytesCount = 0;
-	if(wavFreeFrameCount == 0) {
-	    wavFreeFrameCount = wavFramesCount;
-	    wavCurrentFrame = 0;
-	}	
 
 	current_frame = &wavFrames[wavCurrentFrame];
-
-	while(wavFrameLock) {
-		Sleep(20);		
-	}
+	wavFreeFrameCount = wavFramesCount;
 	
+	while(size > 0) {
 
-	wavFrameLock = true;
+		if(current_frame->dwFlags & WHDR_PREPARED)
+			waveOutUnprepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
 
-	if(current_frame->dwUser > 0)
-		current_frame->dwUser = 0;
+		if(size < (int)(wavFrameSize - current_frame->dwUser)) {
+			memcpy(current_frame->lpData + current_frame->dwUser, data, size);
+			current_frame->dwUser += size;
+			break;
+		}
 
-	if(size < wavFrameSize && size > wavFrameSize)
-		return;
+		remain = wavFrameSize - current_frame->dwUser;
 		
-	memcpy(current_frame->lpData, data, wavFrameSize);
+		memcpy(current_frame->lpData + current_frame->dwUser, data, remain);
 
+		size   -= remain;
+		data   += remain;
+
+		current_frame->dwBufferLength = wavFrameSize;
+
+		waveOutPrepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
+		waveOutWrite(hWaveOut, current_frame, sizeof(WAVEHDR));
+
+		EnterCriticalSection(&wavSection);
+		wavFreeFrameCount--;
+		LeaveCriticalSection(&wavSection);
+
+		while(wavFreeFrameCount < (int)(wavFramesCount / 1.5)) {
+			Sleep(20);
+		}
+		
+		wavCurrentFrame++;
+		wavCurrentFrame %= wavFramesCount;
+		bytesCount      += wavFramesCount;
+
+		current_frame = &wavFrames[wavCurrentFrame];
+		current_frame->dwUser = 0;
+	
+	}
+}
+
+void _dse_waveout_write2(LPSTR data) {
+	
+	WAVEHDR* current_frame;
+	int remain;
+	int result = 0;
+	int bytesCount = 0;
+	int size = wavFrameSize;
+
+	current_frame = &wavFrames[wavCurrentFrame];
+	current_frame->dwUser = 0;
+
+	current_frame->dwBufferLength = wavFrameSize;
+
+	if(current_frame->dwFlags & WHDR_PREPARED)
+		waveOutUnprepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
+		
+	remain = wavFrameSize - current_frame->dwUser;
+		
+	memcpy(current_frame->lpData + current_frame->dwUser, data, remain);
+
+	size   -= remain;
+	data   += remain;
+
+	current_frame->dwBufferLength = wavFrameSize;
+
+	waveOutPrepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
 	waveOutWrite(hWaveOut, current_frame, sizeof(WAVEHDR));
 
-	size -= wavFrameSize;
-	current_frame->dwUser += wavFrameSize;
+	EnterCriticalSection(&wavSection);
+	wavFreeFrameCount--;
+	LeaveCriticalSection(&wavSection);
+
+	while(wavFreeFrameCount < (int)(wavFramesCount / 1.5)) {
+		Sleep(20);
+	}
 		
 	wavCurrentFrame++;
-	wavFreeFrameCount--;
-	bytesCount += wavFramesCount;
+	wavCurrentFrame %= wavFramesCount;
+	bytesCount      += wavFramesCount;
+
+}
+
+ulong_t _dse_waveout_get_free_frames() {
+	return wavFreeFrameCount;
 }
 
 int _dse_waveout_close() {
@@ -170,9 +229,7 @@ void CALLBACK _dse_waveout_process(
 	if(msg_code != WOM_DONE)
 		return;
 
-	if(wavReadFrames == 32)
-		wavFrameLock = false;
-
-
-	wavReadFrames++;
+	EnterCriticalSection(&wavSection);
+	(*wavFreeFrameCount2)++;
+	LeaveCriticalSection(&wavSection);
 }

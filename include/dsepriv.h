@@ -18,6 +18,7 @@ typedef struct _dse_mediafmt_priv {
 typedef struct _dse_mmio_priv {
 	DSE_IMEDIAFMT   format;
 	uchar_t*  		inbuf;
+	ulong_t         inbuf_size;
 } DSE_IMMIO;
 
 #endif

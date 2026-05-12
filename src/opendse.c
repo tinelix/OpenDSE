@@ -42,13 +42,34 @@ int dse_close_input() {
 }
 
 int dse_decode_audio() {
-	_dse_decode_audio(stdmmio, 0, stdmmio->bytes_total);
+	_dse_decode_audio(stdmmio, stdmmio->bytes_read, stdmmio->bytes_total);
 	return 0;
 }
 
 int dse_decode_audio2(ulong_t offset) {
-	_dse_decode_audio(stdmmio, offset, stdmmio->bytes_total);
+	_dse_decode_audio2(stdmmio, offset);
 	return 0; 
+}
+
+int dse_alloc_audio() {
+	int result;
+
+	result = _dse_alloc_audio(stdmmio);
+	return 0;
+}
+
+int dse_free_audio() {
+	int result;
+
+	result = _dse_free_audio(stdmmio);
+	return 0;
+}
+
+float dse_get_frame_rms() {
+	if(stdmmio->_i->inbuf_size == 0)
+		return 0.0;
+
+	return 0.0;
 }
 
 int dse_decode_audio3(ulong_t offset, ulong_t count) {
