@@ -34,28 +34,39 @@
 #include <windows.h>
 #include <os/win32/dsewin32.h>
 
-int _dse_free_frames = 32;
-int _dse_frames_count = 32;
-int _dse_frame_samples = 1024;
+int _dse_free_frames = 0;
+int _dse_frames_count = 0;
+int _dse_frame_samples = 0;
 
 int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 	return TRUE;
 }
 
 int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
+
+	int result = 0;
+
 	#ifdef WIN32_MME
-		return _dse_waveout_open(outdev, mmio);
+		result = _dse_waveout_open(outdev, mmio);
 	#endif		
+
+	_dse_free_frames = 32;
+	_dse_frames_count = 32;
+	_dse_frame_samples = 384;
+
+	return result;
 }
 
 int _dse_alloc_audio(DSE_MMIO* mmio) {
 	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
-	uint_t   frame_samples = 1024;
 	uchar_t* inbuf         = mmio->_i->inbuf;
 
-	_dse_waveout_allocate(frame_samples, sample_size, 32);
 
-	inbuf                  = (uchar_t*)malloc(sample_size * sizeof(uchar_t));
+	_dse_waveout_allocate(_dse_frame_samples, sample_size, _dse_frames_count);
+
+	inbuf                  = (uchar_t*)malloc(
+								_dse_frame_samples * sample_size * sizeof(uchar_t)
+							);
 	return 0;
 }
 
@@ -66,6 +77,9 @@ int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 	uint_t   frame_size    = _dse_frame_samples * sample_size;
 	uint_t   buffer_size   = frame_size * _dse_frames_count;
 
+	if(_dse_frames_count == 0)
+		return -1;	
+	
 	if(count < buffer_size)
 		buffer_size = count;
 
@@ -115,11 +129,14 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
 	uint_t   frame_size    = _dse_frame_samples * sample_size;
 
+	if(_dse_frames_count == 0)
+		return -1;	
+
 	if(offset >= mmio->bytes_total)
-		return -1;
+		return -2;
 
 	if(mmio->bytes_total - offset < frame_size)
-		return -2;
+		return -3;
 
 	 _dse_free_frames = _dse_waveout_get_free_frames();
 	

@@ -4,12 +4,14 @@
 
 static CRITICAL_SECTION wavSection;
 static WAVEHDR*     	wavFrames;
+static HANDLE           wavLargeHeap;
 static volatile ulong_t wavFreeFrameCount;
        int              wavCurrentFrame;
        uint_t           wavFrameSize        = 1024;	
        uint_t           wavFramesCount      = 32;
 	   uint_t           wavReadFramesCount  = 0;
        bool             wavFrameLock        = false;
+	   DSE_OUTDEV*      wavOutdev;
 
 HWAVEOUT hWaveOut;
 
@@ -28,9 +30,7 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	outdev->volume_control  = devCaps.dwSupport & WAVECAPS_VOLUME;
 	outdev->balance_control = devCaps.dwSupport & WAVECAPS_LRVOLUME;
 	outdev->max_channels    = devCaps.wChannels;
-	outdev->product_name    = "";
-
-	strcat(outdev->product_name, devCaps.szPname);
+	outdev->product_name    = (char*)malloc(128 * sizeof(char*));
 
 	outdev->sample_rate       = mmio->audio.sample_rate;
 	outdev->bit_depth		  = mmio->audio.bit_depth;
@@ -59,6 +59,10 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	);
 
 	waveOutGetErrorText(result, errorText, 160);
+
+	strcat(outdev->product_name, devCaps.szPname);
+
+	wavOutdev = outdev;
 
 	if(result == WAVERR_BADFORMAT)
 		return -3;
@@ -90,8 +94,10 @@ WAVEHDR* _dse_waveout_allocate(uint_t size, uint_t sample_size, uint_t count) {
 	wavFrameSize = size * sample_size;
 	buffer_size  = (wavFrameSize + sizeof(WAVEHDR)) * count;
 
+	wavLargeHeap = HeapCreate(0, buffer_size, buffer_size * 4);
+
 	if((buffer = HeapAlloc(
-	      GetProcessHeap(), HEAP_ZERO_MEMORY, buffer_size
+	      wavLargeHeap, HEAP_ZERO_MEMORY, buffer_size
 	   )) == NULL) {
 		return NULL;   
 	}
@@ -114,7 +120,8 @@ WAVEHDR* _dse_waveout_allocate(uint_t size, uint_t sample_size, uint_t count) {
 }
 
 void _dse_waveout_free() {
-	HeapFree(GetProcessHeap, 0, wavFrames);
+	HeapFree(wavLargeHeap, 0, wavFrames);
+	HeapDestroy(wavLargeHeap);
 }
 
 void _dse_waveout_write(LPSTR data, int size) {
@@ -221,6 +228,8 @@ ulong_t _dse_waveout_get_free_frames() {
 
 int _dse_waveout_close() {
 	waveOutClose(hWaveOut);
+	if(wavOutdev)
+		free(wavOutdev->product_name);
 	return 0;
 }
 
