@@ -11,50 +11,62 @@ RES_DIR         = $(DSE_LIB_ROOT)\res
 BIN_DIR         = $(DSE_LIB_ROOT)\..\out\library\bin
 OBJ_DIR         = $(DSE_LIB_ROOT)\..\out\library\obj
 
-C_FLAGS         = -MT -W3 -EHsc -Zi -Od
-
+C_FLAGS         = -MT -W3 -EHsc -Zi -O2
 LD_FLAGS        = -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
 
 !ifdef DEBUG
-    C_FLAGS     = -Z7 -DDEBUG
-    LD_FLAGS    = -debug -pdb:none -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
+C_FLAGS         = -MT -W3 -EHsc -Zi -O2 -DDEBUG
+LD_FLAGS        = -debug -pdb:none -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
 !endif
 
-CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DCROC_STATIC_BUILD -DOPENDSE_LIB -DMSVC_GE_800 -DWIN32 -DWINDOWS
+CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DOPENDSE_LIB -DOPENDSE_STATIC_BUILD -DWIN32 -DWINDOWS -DWIN32_MME
 CC_FLAGS_DLL    = $(C_FLAGS) -I$(INC_DIR)
-CC_LIBS         = user32.lib
+CC_LIBS         = user32.lib winmm.lib
 
 CC              = cl -nologo
 LINKER          = link.exe -nologo
 
 CROCON_LIBS     = $(BIN_DIR)\opendse.lib
 
-OBJECTS         = $(OBJ_DIR)\dsewin32.obj \
-                    $(OBJ_DIR)\dsescrn.obj \
-                    $(OBJ_DIR)\dseclrs.obj \
-                    $(OBJ_DIR)\window.obj \
-                    $(OBJ_DIR)\opendse.obj
+OBJECTS          = $(OBJ_DIR)\outdev.obj \
+                   $(OBJ_DIR)\mmio.obj \
+                   $(OBJ_DIR)\parser.obj \
+                   $(OBJ_DIR)\riffpars.obj \
+		   $(OBJ_DIR)\waveout.obj \
+                   $(OBJ_DIR)\dsewin32.obj \
+                   $(OBJ_DIR)\opendse.obj
 
 all: prepare $(BIN_DIR)\$(PROJECT).dll
 
 $(BIN_DIR)\$(PROJECT).dll: $(OBJECTS)
-    $(LINKER) $(LD_FLAGS) /OUT:$@ $**
+    @if not exist $(BIN_DIR) mkdir $(BIN_DIR)
+    $(LINKER) $(LD_FLAGS) $(CC_LIBS) -out:$@ $**
 
 {$(SRC_DIR)}.c{$(OBJ_DIR)}.obj:
+    $(CC) $(CC_FLAGS) -c $< -Fo$@
+
+{$(SRC_DIR)\devices}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@
 
 {$(SRC_DIR)\decoders}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@
 
+{$(SRC_DIR)\mmio}.c{$(OBJ_DIR)}.obj:
+    $(CC) $(CC_FLAGS) -c $< -Fo$@
+
 {$(SRC_DIR)\os\win32}.c{$(OBJ_DIR)}.obj:
     $(CC) $(CC_FLAGS) -c $< -Fo$@
-    
+
+{$(SRC_DIR)\parsers}.c{$(OBJ_DIR)}.obj:
+    $(CC) $(CC_FLAGS) -c $< -Fo$@
+
 prepare:
-    @if not exist $(DSE_LIB_ROOT)\..\out mkdir $(DSE_LIB_ROOT)\..\out
-    @if not exist $(DSE_LIB_ROOT)\..\out\library mkdir $(DSE_LIB_ROOT)\..\out\library
+    @if not exist $(DSE_LIB_ROOT)\out mkdir $(DSE_LIB_ROOT)\out
     @if not exist $(OBJ_DIR) mkdir $(OBJ_DIR)
-    @if not exist $(BIN_DIR) mkdir $(BIN_DIR)
 
 clean:
     -del $(OBJ_DIR)\*.obj
-    -del $(BIN_DIR)\crocon.lib
+    -del $(BIN_DIR)\*.lib
+    -del $(BIN_DIR)\*.dll
+    -del $(BIN_DIR)\*.exp
+
