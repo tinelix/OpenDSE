@@ -8,15 +8,16 @@ if "%OPENDSE_CC_TARGET%"=="" IF "%1"=="" (
 	echo Before starting the build, you need to configure the build.
 	echo Currently, two target versions of Microsoft Visual C++ are supported:
 	echo.
-	echo [vc2] Microsoft Visual C++  2.0 - 2005
-	echo [vc8] Microsoft Visual C++ 2005 - 2026
+	echo [ vc2] Microsoft Visual C++  2.0 - 2005
+	echo [ vc8] Microsoft Visual C++ 2005 - 2015
+	echo [vc14] Microsoft Visual C++ 2015 - 2025
 	echo.
-	set /P OPENDSE_CC_TARGET=Choose your MSVC target version [vc2, vc8]: 
+	set /P OPENDSE_CC_TARGET=Choose your MSVC target version [vc2, vc8, vc14]: 
 ) else (
 	echo.
 )
 
-if "%OPENDSE_CC_TARGET%"=="" (set CROCON_CC_TARGET=vc2)
+if "%OPENDSE_CC_TARGET%"=="" (set OPENDSE_CC_TARGET=vc2)
 
 
 if "%OPENDSE_DEBUG%"=="" IF "%2"=="" (

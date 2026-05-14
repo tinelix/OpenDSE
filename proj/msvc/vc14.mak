@@ -16,7 +16,7 @@ LD_FLAGS        = -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
 
 !ifdef DEBUG
 C_FLAGS         = -MT -W3 -EHsc -Zi -Od -DDEBUG
-LD_FLAGS        = -debug -pdb:none -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
+LD_FLAGS        = -debug:none -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
 !endif
 
 CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DOPENDSE_LIB -DOPENDSE_STATIC_BUILD -DWIN32 -DWINDOWS -DWIN32_MME -DMSVC_GE_800
