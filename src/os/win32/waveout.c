@@ -1,6 +1,7 @@
 #include <os/win32/waveout.h>
 #include <mmio/mmio.h>
 #include <dsepriv.h>
+#include <stdlib.h>
 
 static CRITICAL_SECTION wavSection;
 static WAVEHDR*     	wavFrames;
@@ -29,12 +30,12 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	
 	outdev->volume_control  = devCaps.dwSupport & WAVECAPS_VOLUME;
 	outdev->balance_control = devCaps.dwSupport & WAVECAPS_LRVOLUME;
-	outdev->max_channels    = devCaps.wChannels;
+	outdev->max_channels    = (uint_t)devCaps.wChannels;
 	outdev->product_name    = (char*)malloc(128 * sizeof(char*));
 
-	outdev->sample_rate       = mmio->audio.sample_rate;
-	outdev->bit_depth		  = mmio->audio.bit_depth;
-	outdev->channels          = mmio->audio.channels;
+	outdev->sample_rate     = mmio->audio.sample_rate;
+	outdev->bit_depth	= mmio->audio.bit_depth;
+	outdev->channels        = mmio->audio.channels;
 
 	/*  NOTE: WAVEFORMATEX is undocumented structure in Win32 Programmer's Reference 
 	 *	      from Microsoft Visual C++ 2.0 and is located in the 'mmsystem.h' file.
@@ -49,7 +50,7 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	wavFormat.wBitsPerSample  = mmio->audio.bit_depth;
 	wavFormat.nChannels       = mmio->audio.channels;
 	wavFormat.nBlockAlign     = (mmio->audio.bit_depth * wavFormat.nChannels) / 8;
-	wavFormat.nAvgBytesPerSec =	mmio->audio.sample_rate * wavFormat.nBlockAlign;
+	wavFormat.nAvgBytesPerSec = mmio->audio.sample_rate * wavFormat.nBlockAlign;
 	
 	result = waveOutOpen(
 		&hWaveOut, outdev->id, &wavFormat,
@@ -59,8 +60,11 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	);
 
 	waveOutGetErrorText(result, errorText, 160);
-
-	strcat(outdev->product_name, devCaps.szPname);
+	#ifdef MSVC_GE_800
+	        strcat_s(outdev->product_name, 160, devCaps.szPname);
+	#else
+	        strcat(outdev->product_name, devCaps.szPname);
+	#endif
 
 	wavOutdev = outdev;
 

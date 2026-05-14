@@ -33,7 +33,7 @@ OBJECTS          = $(OBJ_DIR)\outdev.obj \
                    $(OBJ_DIR)\mmio.obj \
                    $(OBJ_DIR)\parser.obj \
                    $(OBJ_DIR)\riffpars.obj \
-		           $(OBJ_DIR)\waveout.obj \
+		   $(OBJ_DIR)\waveout.obj \
                    $(OBJ_DIR)\dsewin32.obj \
                    $(OBJ_DIR)\opendse.obj
 

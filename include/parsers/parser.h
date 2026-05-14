@@ -3,6 +3,7 @@
 
 #include <mmio/mmio.h>
 #include <utils/c_exts.h>
+#include <parsers/riffpars.h>
 #include <dsepriv.h>
 
 int dse_parse_input(DSE_MMIO* mmio, uchar_t* inbuf);

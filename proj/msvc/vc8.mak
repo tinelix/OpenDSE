@@ -8,8 +8,8 @@ DEF_DIR         = $(DSE_LIB_ROOT)\def
 RES_DIR         = $(DSE_LIB_ROOT)\res
 
 
-BIN_DIR         = $(DSE_LIB_ROOT)\..\out\library\bin
-OBJ_DIR         = $(DSE_LIB_ROOT)\..\out\library\obj
+BIN_DIR         = $(DSE_LIB_ROOT)\out\bin
+OBJ_DIR         = $(DSE_LIB_ROOT)\out\obj
 
 C_FLAGS         = -MT -W3 -EHsc -Zi -O2
 LD_FLAGS        = -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
@@ -19,7 +19,7 @@ C_FLAGS         = -MT -W3 -EHsc -Zi -O2 -DDEBUG
 LD_FLAGS        = -debug -pdb:none -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
 !endif
 
-CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DOPENDSE_LIB -DOPENDSE_STATIC_BUILD -DWIN32 -DWINDOWS -DWIN32_MME
+CC_FLAGS        = $(C_FLAGS) -I$(INC_DIR) -DOPENDSE_LIB -DOPENDSE_STATIC_BUILD -DWIN32 -DWINDOWS -DWIN32_MME -DMSVC_GE_800
 CC_FLAGS_DLL    = $(C_FLAGS) -I$(INC_DIR)
 CC_LIBS         = user32.lib winmm.lib
 

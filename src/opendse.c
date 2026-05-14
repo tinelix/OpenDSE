@@ -5,6 +5,12 @@
 #include <mmio/mmio.h>
 #include <parsers/parser.h>
 
+#ifdef WIN32
+	#include <os/win32/dsewin32.h>
+#elif UNIX
+	#include <os/unix/dseunix.h>
+#endif
+
 DSE_MMIO* 		stdmmio;
 
 int dse_open_input(const char* path) {

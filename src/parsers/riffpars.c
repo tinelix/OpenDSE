@@ -1,5 +1,6 @@
 #include <parsers/riffpars.h>
 #include <dsepriv.h>
+#include <stdlib.h>
 
 int dse_riff_parse(DSE_MMIO* mmio, uchar_t* buffer) {
 	
@@ -33,10 +34,10 @@ int dse_riff_parse(DSE_MMIO* mmio, uchar_t* buffer) {
 	else if(header.bit_depth == 32)
 		mmio->audio.str_id = "LPCM-S32LE"; 
 
-	mmio->audio.channels    = header.channels;
+	mmio->audio.channels    = (uchar_t)header.channels;
 	mmio->audio.sample_rate = header.sample_rate;
 	mmio->audio.bitrate     = header.byte_rate * 8;
-	mmio->audio.bit_depth   = header.bit_depth;
+	mmio->audio.bit_depth   = (uchar_t)header.bit_depth;
 	mmio->opened            = true;
 	
 	return sizeof(header);
