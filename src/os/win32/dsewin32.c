@@ -33,6 +33,7 @@
 
 #include <windows.h>
 #include <os/win32/dsewin32.h>
+#include <math.h>
 
 int _dse_free_frames = 0;
 int _dse_frames_count = 0;
@@ -43,6 +44,8 @@ int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 }
 
 int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
+
+	double force_fpi_load = sqrt(4);
 
 	int result = 0;
 
