@@ -248,6 +248,6 @@ void CALLBACK _dse_waveout_process(
 		return;
 
 	EnterCriticalSection(&wavSection);
-	(*wavFreeFrameCount2)++;
+	wavFreeFrameCount++;
 	LeaveCriticalSection(&wavSection);
 }

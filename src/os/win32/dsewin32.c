@@ -173,7 +173,7 @@ bool _dse_is_busy() {
 int _dse_close_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	#ifdef WIN32_MME
 		return _dse_waveout_close(outdev, mmio);
-	#endif		
+	#endif
 }
 
 #endif
