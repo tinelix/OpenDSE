@@ -14,7 +14,7 @@ OBJ_DIR         = $(DSE_LIB_ROOT)\out\obj
 C_FLAGS         = -MT -W3 -EHsc -Zi -O2
 LD_FLAGS        = -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
 
-!ifdef DEBUG
+!if "$(DEBUG)" == "y" 
 C_FLAGS         = -MT -W3 -EHsc -Zi -Od -DDEBUG
 LD_FLAGS        = -debug -pdb:none -dll -out:$(BIN_DIR)\opendse.dll -def:$(DEF_DIR)\opendse.def
 !endif

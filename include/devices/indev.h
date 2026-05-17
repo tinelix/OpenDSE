@@ -9,7 +9,7 @@ typedef struct _dse_input_dev {
 	uint_t   bit_depth;
 	uint_t   channels;
 	char*    product_name;
-	bool     volume_control;
+	cbool     volume_control;
 } DSE_INDEV;
 
 /*int dse_open_indev(DSE_INDEV* indev);

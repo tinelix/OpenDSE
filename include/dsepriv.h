@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <utils/c_exts.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define MKMAGIC32(uc1, uc2, uc3, uc4) \
 	(uc4 | (uc3 << 8) | (uc2 << 16) | (uc1 << 24)) 
 
@@ -20,6 +24,10 @@ typedef struct _dse_mmio_priv {
 	uchar_t*  		inbuf;
 	ulong_t         inbuf_size;
 } DSE_IMMIO;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

@@ -12,6 +12,8 @@ RES_DIR         =  $(DSE_LIB_ROOT)/res
 
 SRC_DIRS        =  $(SRC_DIR) \
                    $(SRC_DIR)/os/unix \
+                   $(SRC_DIR)/devices \
+                   $(SRC_DIR)/parsers \
                    $(SRC_DIR)/decoders \
                    $(SRC_DIR)/utils
 
@@ -59,6 +61,12 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/os/unix/%.c
 	$(CC) $(C_FLAGS) -I$(INC_DIR) -c $< -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/decoders/%.c
+	$(CC) $(C_FLAGS) -I$(INC_DIR) -c $< -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/devices/%.c
+	$(CC) $(C_FLAGS) -I$(INC_DIR) -c $< -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/parsers/%.c
 	$(CC) $(C_FLAGS) -I$(INC_DIR) -c $< -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/utils/%.c

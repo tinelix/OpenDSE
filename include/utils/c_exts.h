@@ -32,11 +32,19 @@
 #ifndef _TINELIX_C_EXTS
 #define _TINELIX_C_EXTS
 
-typedef enum {false, true} bool;
+typedef enum {cfalse = 0, ctrue = 1} cbool;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef unsigned char  uchar_t;
 typedef unsigned short ushort_t;
 typedef unsigned int   uint_t;
 typedef unsigned long  ulong_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

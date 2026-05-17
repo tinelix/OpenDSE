@@ -1,3 +1,5 @@
+#ifdef WIN32_MME
+
 #include <os/win32/waveout.h>
 #include <mmio/mmio.h>
 #include <dsepriv.h>
@@ -11,7 +13,7 @@ static volatile ulong_t wavFreeFrameCount;
        uint_t           wavFrameSize        = 1024;	
        uint_t           wavFramesCount      = 32;
 	   uint_t           wavReadFramesCount  = 0;
-       bool             wavFrameLock        = false;
+       cbool            wavFrameLock        = false;
 	   DSE_OUTDEV*      wavOutdev;
 
 HWAVEOUT hWaveOut;
@@ -19,7 +21,7 @@ HWAVEOUT hWaveOut;
 int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 
 	int           result;
-	char          errorText[160];
+	char          errorText[161];
 	WAVEOUTCAPS   devCaps;
 	WAVEFORMATEX  wavFormat;
 	
@@ -31,10 +33,10 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	outdev->volume_control  = devCaps.dwSupport & WAVECAPS_VOLUME;
 	outdev->balance_control = devCaps.dwSupport & WAVECAPS_LRVOLUME;
 	outdev->max_channels    = (uint_t)devCaps.wChannels;
-	outdev->product_name    = (char*)malloc(128 * sizeof(char*));
+	outdev->product_name    = (char*)malloc(161 * sizeof(char*));
 
 	outdev->sample_rate     = mmio->audio.sample_rate;
-	outdev->bit_depth	= mmio->audio.bit_depth;
+	outdev->bit_depth       = mmio->audio.bit_depth;
 	outdev->channels        = mmio->audio.channels;
 
 	/*  NOTE: WAVEFORMATEX is undocumented structure in Win32 Programmer's Reference 
@@ -54,15 +56,17 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	
 	result = waveOutOpen(
 		&hWaveOut, outdev->id, &wavFormat,
-		(ulong_t)_dse_waveout_process,
+		(ulong_t*)_dse_waveout_process,
 		(ulong_t*)&wavFreeFrameCount,
 		CALLBACK_FUNCTION
 	);
 
 	waveOutGetErrorText(result, errorText, 160);
 	#ifdef MSVC_GE_800
-	        strcat_s(outdev->product_name, 160, devCaps.szPname);
+			strcat_s(outdev->product_name, 12, "[waveOut] ");
+	        strcat_s(outdev->product_name, 140, devCaps.szPname);
 	#else
+			strcat(outdev->product_name, "[waveOut] ");
 	        strcat(outdev->product_name, devCaps.szPname);
 	#endif
 
@@ -98,10 +102,10 @@ WAVEHDR* _dse_waveout_allocate(uint_t size, uint_t sample_size, uint_t count) {
 	wavFrameSize = size * sample_size;
 	buffer_size  = (wavFrameSize + sizeof(WAVEHDR)) * count;
 
-	wavLargeHeap = HeapCreate(0, buffer_size, buffer_size * 4);
+	//wavLargeHeap = HeapCreate(0, buffer_size, buffer_size * 4);
 
 	if((buffer = HeapAlloc(
-	      wavLargeHeap, HEAP_ZERO_MEMORY, buffer_size
+	      GetProcessHeap(), HEAP_ZERO_MEMORY, buffer_size
 	   )) == NULL) {
 		return NULL;   
 	}
@@ -111,7 +115,7 @@ WAVEHDR* _dse_waveout_allocate(uint_t size, uint_t sample_size, uint_t count) {
 
 	for(i = 0; i < count; i++) {
 		wavFrames[i].dwBufferLength = wavFrameSize;
-		wavFrames[i].lpData = buffer;
+		wavFrames[i].lpData = (LPSTR)buffer;
 		buffer += wavFrameSize;
 	}
 	 
@@ -124,8 +128,8 @@ WAVEHDR* _dse_waveout_allocate(uint_t size, uint_t sample_size, uint_t count) {
 }
 
 void _dse_waveout_free() {
-	HeapFree(wavLargeHeap, 0, wavFrames);
-	HeapDestroy(wavLargeHeap);
+	HeapFree(GetProcessHeap(), 0, wavFrames);
+	//HeapDestroy(wavLargeHeap);
 }
 
 void _dse_waveout_write(LPSTR data, int size) {
@@ -192,7 +196,8 @@ void _dse_waveout_write2(LPSTR data) {
 
 	current_frame->dwBufferLength = wavFrameSize;
 
-	waveOutUnprepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
+	if (current_frame->dwFlags & WHDR_PREPARED)
+		waveOutUnprepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
 		
 	if(size < (int)(wavFrameSize - current_frame->dwUser)) {
 		memcpy(current_frame->lpData + current_frame->dwUser, data, sizeof(data));
@@ -209,8 +214,8 @@ void _dse_waveout_write2(LPSTR data) {
 
 	current_frame->dwBufferLength = wavFrameSize;
 
-	waveOutPrepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
-	waveOutWrite(hWaveOut, current_frame, sizeof(WAVEHDR));
+	waveOutPrepareHeader(hWaveOut, current_frame, sizeof(*current_frame));
+	waveOutWrite(hWaveOut, current_frame, sizeof(*current_frame));
 
 	EnterCriticalSection(&wavSection);
 	wavFreeFrameCount--;
@@ -248,6 +253,10 @@ void CALLBACK _dse_waveout_process(
 		return;
 
 	EnterCriticalSection(&wavSection);
+	
 	wavFreeFrameCount++;
+
 	LeaveCriticalSection(&wavSection);
 }
+
+#endif

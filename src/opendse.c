@@ -26,10 +26,19 @@ int dse_open_input(const char* path) {
 	if(result > 0) {
 		
 		uchar_t* inbuf = stdmmio->_i->inbuf;
-		
-		result = dse_parse_input(stdmmio, inbuf);
 
 		stdmmio->bytes_read = result;
+		stdmmio->opened = ctrue;
+		stdmmio->playing = cfalse;
+		stdmmio->paused = cfalse;
+		stdmmio->protocol = DSE_PROTOCOL_FILE;
+
+		stdmmio->audio.sample_rate = 0;
+		stdmmio->audio.bit_depth = 0;
+		stdmmio->audio.bitrate = 0;
+		stdmmio->audio.channels = 0;
+		
+		result = dse_parse_input(stdmmio, inbuf);
 	}
 
 	return result;
@@ -66,7 +75,7 @@ int dse_alloc_audio() {
 int dse_is_busy() {
 	int result = _dse_is_busy();
 
-	return result == true ? 0 : 1;	
+	return result == ctrue;
 }
 
 int dse_free_audio() {

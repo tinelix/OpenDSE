@@ -10,6 +10,10 @@
 #include "devices/indev.h"
 #include "devices/outdev.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef OPENDSE_LIB
 	extern DSE_MMIO* stdmmio;
 #else
@@ -34,5 +38,9 @@ int dse_decode_audio2(ulong_t offset);
 int dse_decode_audio3(ulong_t  offset, ulong_t count);
 int dse_free_audio();
 int dse_is_busy();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

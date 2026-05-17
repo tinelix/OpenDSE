@@ -38,7 +38,7 @@ int dse_riff_parse(DSE_MMIO* mmio, uchar_t* buffer) {
 	mmio->audio.sample_rate = header.sample_rate;
 	mmio->audio.bitrate     = header.byte_rate * 8;
 	mmio->audio.bit_depth   = (uchar_t)header.bit_depth;
-	mmio->opened            = true;
+	mmio->opened            = ctrue;
 	
 	return sizeof(header);
 }

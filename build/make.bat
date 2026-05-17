@@ -10,21 +10,25 @@ if "%OPENDSE_CC_TARGET%"=="" IF "%1"=="" (
 	echo.
 	echo [ vc2] Microsoft Visual C++  2.0 - 2003
 	echo [ vc8] Microsoft Visual C++ 2005 - 2013
-	echo [vc14] Microsoft Visual C++ 2015 - 2026
+        echo [vc14] Microsoft Visual C++ 2015 - 2026
 	echo.
-	set /P OPENDSE_CC_TARGET=Choose your MSVC target version [vc2, vc8,  vc14]: 
+	set /P OPENDSE_CC_TARGET=Choose your MSVC target version [vc2, vc8, vc14]: 
 ) else (
 	echo.
 )
 
-if "%OPENDSE_CC_TARGET%"=="" (set OPENDSE_CC_TARGET=vc2)
-
+if "%OPENDSE_CC_TARGET%"=="" (
+set CROCON_CC_TARGET=vc2
+echo  Microsoft Visual C++ 2.0 - 2003 was selected as the default target. 
+echo.
+echo. You can change the default value by setting the OPENDSE_CC_TARGET variable.
+)
 
 if "%OPENDSE_DEBUG%"=="" IF "%2"=="" (
 	set /P OPENDSE_DEBUG=Include debug symbols before building? [y, n]: 
 )
 
-if NOT "%OPENDSE_DEBUG%"=="" (
+IF NOT "%OPENDSE_DEBUG%" == "" (
 	set DEBUG=1
 ) else (
 	set DEBUG=
@@ -45,7 +49,9 @@ if "%OPENDSE_DEBUG%"=="" IF "%2"=="" (
 )
 
 cd ..\proj\msvc
+@echo on
 nmake -nologo -f %OPENDSE_CC_TARGET%.mak DEBUG=%DEBUG%
+@echo off
 
 echo.
 echo Done!
