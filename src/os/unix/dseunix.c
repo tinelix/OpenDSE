@@ -1,5 +1,8 @@
 #ifdef UNIX
 
+#include <os/unix/dseunix.h>
+#include <math.h>
+
 #ifndef UNIX_LEGACY
 
 __attribute__((constructor))
@@ -13,6 +16,10 @@ void libopendse_finish() {
 }
 
 #endif
+
+int _dse_free_frames = 0;
+int _dse_frames_count = 0;
+int _dse_frame_samples = 0;
 
 int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 

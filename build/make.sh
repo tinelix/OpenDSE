@@ -9,7 +9,7 @@ OPENDSE_LEGACY=false
 
 show_help() {
     cat << EOF
-Crocon TUI Framework Build Script
+Open Digital Sound Engine (OpenDSE) Build Script
 
 Usage: $0 [options]
     
@@ -55,16 +55,16 @@ makeOpenDSE() {
 
     echo "[2/3] Building OpenDSE from source..."
 
-    cd $OPENDSE_ROOT/library/proj/gcc
+    cd $OPENDSE_ROOT/proj/gcc
     make OPENDSE_DEBUG=$OPENDSE_DEBUG OPENDSE_LEGACY=$OPENDSE_LEGACY
     cd $OPENDSE_ROOT
 
-    echo "[3/3] Installing OpenDSE Framework... (requires su permissions)"
+    echo "[3/3] Installing OpenDSE... (requires su permissions)"
 
-    su -c "cp out/library/bin/libopendse.so $PREFIX/libopendse.so"
+    su -c "cp out/bin/libopendse.so $PREFIX/libopendse.so"
 
     echo Done!
     echo 
 }
 
-makeCrocon
+makeOpenDSE
