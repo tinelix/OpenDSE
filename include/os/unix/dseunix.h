@@ -4,6 +4,10 @@
 #include "../../mmio/mmio.h"
 #include "../../devices/outdev.h"
 
+#ifdef UNIX_ALSA
+    #include <alsa/asoundlib.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

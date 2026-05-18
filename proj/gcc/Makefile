@@ -23,9 +23,9 @@ OBJ_DIR         =  $(DSE_LIB_ROOT)/out/obj
 
 CC = gcc
 
-ifeq ($(CROCON_LEGACY),true)
+ifeq ($(OPENDSE_LEGACY),true)
 
-ifeq ($(CROCON_DEBUG),true)
+ifeq ($(OPENDSE_DEBUG),true)
 C_FLAGS         =  -O0 -fPIC -DOPENDSE_LIB -DUNIX -DUNIX_LEGACY -DHAVE_VPRINTF -g3 -fno-omit-frame-pointer
 else
 C_FLAGS         =  -O2 -fPIC -DOPENDSE_LIB -DUNIX -DUNIX_LEGACY -DHAVE_VPRINTF
@@ -33,11 +33,13 @@ endif
 
 else
 
-ifeq ($(CROCON_DEBUG),true)
-C_FLAGS         =  -O0 -fPIC -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF -g3 -fno-omit-frame-pointer -fno-optimize-sibling-calls 
+ifeq ($(OPENDSE_DEBUG),true)
+C_FLAGS         =  -O0 -fPIC -DOPENDSE_LIB -DUNIX -DUNIX_ALSA -DHAVE_VPRINTF -g3 -fno-omit-frame-pointer -fno-optimize-sibling-calls
 else
-C_FLAGS         =  -O2 -fPIC -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF
+C_FLAGS         =  -O2 -fPIC -DOPENDSE_LIB -DUNIX -DUNIX_ALSA -DHAVE_VPRINTF
 endif
+
+LD_LIBS         = -lasound
 
 endif
 
@@ -47,6 +49,7 @@ OBJECTS         =  $(OBJ_DIR)/outdev.o \
                    $(OBJ_DIR)/mmio.o \
                    $(OBJ_DIR)/parser.o \
                    $(OBJ_DIR)/riffpars.o \
+                   $(OBJ_DIR)/alsawrap.o \
                    $(OBJ_DIR)/dseunix.o \
                    $(OBJ_DIR)/opendse.o
 
@@ -78,7 +81,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/utils/%.c
 	$(CC) $(C_FLAGS) -I$(INC_DIR) -c $< -o $@
 
 $(BIN_DIR)/lib$(PROJECT).so: $(OBJECTS)
-	$(CC) $(LD_ARCH) -shared -o $@ $(OBJECTS) $(LD_FLAGS)
+	$(CC) $(LD_ARCH) -shared $(LD_LIBS) -o $@ $(OBJECTS) $(LD_FLAGS)
 
 $(BIN_DIR)/lib$(PROJECT).a: $(OBJECTS)
 	ar rcs $@ $(OBJECTS)

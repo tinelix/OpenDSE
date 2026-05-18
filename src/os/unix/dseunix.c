@@ -23,45 +23,42 @@ int _dse_frame_samples = 0;
 
 int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 
-	double force_fpi_load = sqrt(4);
-
 	int result = 0;
 	
-	// TODO: Implement native APIs
-
-	/*
-	 * Sampling settings example:
-	 *
-	 *  _dse_free_frames = 32;
-	 *  _dse_frames_count = 32;
-	 *
-	 *  _dse_frame_samples = 430 * (mmio->audio.bit_depth / 8);
-	 */
+	#ifdef UNIX_ALSA
+	_dse_alsa_open(outdev, mmio);
+	#endif
+	
+	_dse_frame_samples = 384;
 
 	return result;
 }
 
 int _dse_alloc_audio(DSE_MMIO* mmio) {
-	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
+	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
 	uchar_t* inbuf         = mmio->_i->inbuf;
 
-	// TODO: Implement native APIs
+	#ifdef UNIX_ALSA
+		_dse_alsa_allocate(_dse_frame_samples, sample_size, 32);
+		_dse_free_frames = 32;
+		_dse_frames_count = 32;
+	#endif
 
-	inbuf                  = (uchar_t*)malloc(
-								_dse_frame_samples * sample_size * sizeof(uchar_t)
-							);
+	inbuf   = (uchar_t*)malloc(
+                            _dse_frame_samples * sample_size * sizeof(uchar_t)
+                        );
 	return 0;
 }
 
 int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 	
 	uchar_t* inbuf         = mmio->_i->inbuf;
-	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
+	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
 	uint_t   frame_size    = _dse_frame_samples * sample_size;
 	uint_t   buffer_size   = frame_size * _dse_frames_count;
 
 	if(_dse_frames_count == 0)
-		return -1;	
+		return -1;
 	
 	if(count < buffer_size)
 		buffer_size = count;
@@ -77,7 +74,7 @@ int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 		fseek(mmio->filesrc, offset, SEEK_SET);
 
 		while(_dse_free_frames < _dse_frames_count - 1) {
-			Sleep(50);
+			usleep(50);
 			// TODO: Implement native APIs
 			
 			if(_dse_free_frames == _dse_frames_count) {
@@ -106,7 +103,7 @@ int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 
 	uchar_t* inbuf         = mmio->_i->inbuf;
-	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
+	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
 	uint_t   frame_size    = _dse_frame_samples * sample_size;
 
 	if(_dse_frames_count == 0)
@@ -118,7 +115,9 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 	if(mmio->bytes_total - offset < frame_size)
 		return -3;
 	
-	// TODO: Implement native APIs
+	#ifdef UNIX_ALSA
+		_dse_alsa_wait();
+	#endif
 	
 	fseek(mmio->filesrc, offset, SEEK_SET);
 
@@ -127,7 +126,9 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 
 	mmio->bytes_read += fread(inbuf, 1, frame_size, mmio->filesrc);
 
-	// TODO: Implement native APIs
+	#ifdef UNIX_ALSA
+		_dse_alsa_write2(inbuf);
+	#endif
 
 	return 0;
 }
@@ -135,9 +136,12 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 int _dse_free_audio(DSE_MMIO* mmio) {
 	uchar_t* inbuf         = mmio->_i->inbuf;
 	
-	free(inbuf);
+	if(inbuf)
+		free(inbuf);
 	
-	// TODO: Implement native APIs
+	#ifdef UNIX_ALSA
+		_dse_alsa_free();
+	#endif
 	
 	return 0;
 }
@@ -146,12 +150,14 @@ cbool _dse_is_busy() {
      
      // TODO: Implement native APIs
      
-     return _dse_free_frames != _dse_frames_count;
+     return cfalse;
 }
 
 
 int _dse_close_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
-	// TODO: Implement native APIs
+	#ifdef UNIX_ALSA
+		_dse_alsa_close();
+	#endif
 	
 	return 0;
 }
