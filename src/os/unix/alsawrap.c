@@ -11,7 +11,8 @@ uchar_t*             _dse_alsa_buffer;
 snd_pcm_hw_params_t* _dse_alsa_hw_params;
 
 int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
-    int                  result    = 0;
+    int result    = 0;
+    int dir       = 0;
     
     _dse_alsa_sample_rate = mmio->audio.sample_rate;
     _dse_alsa_bit_depth   = mmio->audio.bit_depth;
@@ -32,7 +33,7 @@ int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     
     // Near sample rate and channels
     snd_pcm_hw_params_set_rate_near(hAlsa, _dse_alsa_hw_params, &_dse_alsa_sample_rate, 0);
-    
+
     if(mmio->audio.bit_depth == 8) {
         snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_U8);
     } else if(mmio->audio.bit_depth == 16) {
@@ -63,7 +64,12 @@ int  _dse_alsa_allocate(uint_t size, uint_t sample_size, uint_t count) {
     snd_pcm_sw_params_set_start_threshold(hAlsa, swParams, 0);
     snd_pcm_sw_params(hAlsa, swParams);
     
-    snd_pcm_hw_params_get_rate(_dse_alsa_hw_params, &_dse_alsa_sample_rate, 0);
+    #ifdef UNIX_LEGACY
+        snd_pcm_hw_params_get_rate(_dse_alsa_hw_params, &_dse_alsa_sample_rate);
+    #else
+        snd_pcm_hw_params_get_rate(_dse_alsa_hw_params, &_dse_alsa_sample_rate, 0);
+    #endif
+
     result = snd_pcm_prepare(hAlsa);
     
     _dse_alsa_frame_size = size;

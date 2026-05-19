@@ -1,6 +1,8 @@
 #ifndef _OPENDSE_PARSERS_RIFFPARS
 #define _OPENDSE_PARSERS_RIFFPARS
 
+#include <string.h>
+
 #include <utils/c_exts.h>
 #include <mmio/mmio.h>
 

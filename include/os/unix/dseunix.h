@@ -5,6 +5,7 @@
 #include "../../devices/outdev.h"
 
 #ifdef UNIX_ALSA
+    #include "alsawrap.h"
     #include <alsa/asoundlib.h>
 #endif
 

@@ -13,7 +13,7 @@ static volatile ulong_t wavFreeFrameCount;
        uint_t           wavFrameSize        = 1024;	
        uint_t           wavFramesCount      = 32;
 	   uint_t           wavReadFramesCount  = 0;
-       cbool            wavFrameLock        = false;
+       cbool            wavFrameLock        = cfalse;
 	   DSE_OUTDEV*      wavOutdev;
 
 HWAVEOUT hWaveOut;

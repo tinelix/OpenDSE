@@ -4,6 +4,10 @@
 
 #ifdef WIN32
 	#include <os/win32/dsewin32.h>
+#else
+	#ifdef UNIX
+		#include <os/unix/dseunix.h>
+	#endif
 #endif
 
 int dse_open_outdev(DSE_OUTDEV* outdev) {

@@ -50,7 +50,7 @@ while [ $# -gt 0 ]; do
 done
 
 makeOpenDSE() {
-    echo "[1/4] Cleaning previous builds..."
+    echo "[1/3] Cleaning previous builds..."
     rm -rf ../out
 
     echo "[2/3] Building OpenDSE from source..."

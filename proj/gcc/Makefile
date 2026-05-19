@@ -21,26 +21,24 @@ SRC_DIRS        =  $(SRC_DIR) \
 BIN_DIR         =  $(DSE_LIB_ROOT)/out/bin
 OBJ_DIR         =  $(DSE_LIB_ROOT)/out/obj
 
-CC = gcc
+CC              =  gcc
+OPENDSE_BACKEND =  alsa
+
+ifeq ($(OPENDSE_BACKEND),alsa)
+C_BACKEND       = -DUNIX_ALSA
+LD_LIBS         = -lasound
+else
+C_BACKEND       = -DUNIX_OSS
+endif
 
 ifeq ($(OPENDSE_LEGACY),true)
-
-ifeq ($(OPENDSE_DEBUG),true)
-C_FLAGS         =  -O0 -fPIC -DOPENDSE_LIB -DUNIX -DUNIX_LEGACY -DHAVE_VPRINTF -g3 -fno-omit-frame-pointer
-else
-C_FLAGS         =  -O2 -fPIC -DOPENDSE_LIB -DUNIX -DUNIX_LEGACY -DHAVE_VPRINTF
+C_LEGACY        = -DUNIX_LEGACY
 endif
 
-else
-
 ifeq ($(OPENDSE_DEBUG),true)
-C_FLAGS         =  -O0 -fPIC -DOPENDSE_LIB -DUNIX -DUNIX_ALSA -DHAVE_VPRINTF -g3 -fno-omit-frame-pointer -fno-optimize-sibling-calls
+C_FLAGS         =  -O0 -fPIC -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF $(C_BACKEND) $(C_LEGACY) -g3 -fno-omit-frame-pointer -fno-optimize-sibling-calls
 else
-C_FLAGS         =  -O2 -fPIC -DOPENDSE_LIB -DUNIX -DUNIX_ALSA -DHAVE_VPRINTF
-endif
-
-LD_LIBS         = -lasound
-
+C_FLAGS         =  -O2 -fPIC -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF $(C_BACKEND) $(C_LEGACY)
 endif
 
 SOURCES         =  $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.c))
