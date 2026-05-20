@@ -57,11 +57,22 @@ makeOpenDSE() {
 
     cd $OPENDSE_ROOT/proj/gcc
     make OPENDSE_DEBUG=$OPENDSE_DEBUG OPENDSE_LEGACY=$OPENDSE_LEGACY
+    
+    if [ $? -ne 0 ]; then
+        echo "OpenDSE build failed with error code $?."
+        exit $?
+    fi
+    
     cd $OPENDSE_ROOT
 
     echo "[3/3] Installing OpenDSE... (requires su permissions)"
 
     su -c "cp out/bin/libopendse.so $PREFIX/libopendse.so"
+    
+    if [ $? -ne 0 ]; then
+        echo "OpenDSE installation failed with error code $?."
+        exit $?
+    fi
 
     echo Done!
     echo 
