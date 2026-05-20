@@ -1,6 +1,7 @@
 LIBRARY				"OpenDSE"
 
 EXPORTS 
+    dse_get_version
 	dse_open_input
 	dse_close_input
 	dse_open_outdev
@@ -11,5 +12,6 @@ EXPORTS
 	dse_decode_audio3
 	dse_alloc_audio
 	dse_free_audio
+	dse_get_frame_rms
 	dse_is_busy
 	stdmmio

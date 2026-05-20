@@ -30,12 +30,14 @@ typedef struct _dse_version {
 	int patch;
 } DSEVERSION;
 
+int dse_get_version(DSEVERSION* version);
 int dse_open_input(const char* path);
 int dse_close_input();
 int dse_alloc_audio();
 int dse_decode_audio();
 int dse_decode_audio2(ulong_t offset);
 int dse_decode_audio3(ulong_t  offset, ulong_t count);
+int dse_get_frame_rms(double* rms, uint_t size);
 int dse_free_audio();
 int dse_is_busy();
 

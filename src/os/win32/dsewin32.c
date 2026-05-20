@@ -166,7 +166,7 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 	uint_t   frame_size    = _dse_frame_samples * sample_size;
 
 	if(_dse_frames_count == 0)
-		return -1;	
+		return -1;
 
 	if(offset >= mmio->bytes_total)
 		return -2;

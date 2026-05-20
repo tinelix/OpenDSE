@@ -125,6 +125,8 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 	mmio->audio.frame_samples   = _dse_frame_samples;
 
 	mmio->bytes_read += fread(inbuf, 1, frame_size, mmio->filesrc);
+	
+	mmio->_i->inbuf_size = frame_size;
 
 	#ifdef UNIX_ALSA
 		_dse_alsa_write2(inbuf);
