@@ -196,7 +196,7 @@ void _dse_waveout_write2(LPSTR data) {
 
 	if (current_frame->dwFlags & WHDR_PREPARED)
 		waveOutUnprepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
-		
+	
 	memcpy(current_frame->lpData, data, wavFrameSize);
 
 	data   += wavFrameSize;
@@ -210,6 +210,7 @@ void _dse_waveout_write2(LPSTR data) {
 	wavFreeFrameCount--;
 	LeaveCriticalSection(&wavSection);
 
+	// ждем завершения 2/3 буфера
 	while(wavFreeFrameCount < (int)(wavFramesCount / 1.5)) {
 		Sleep(20);
 	}
