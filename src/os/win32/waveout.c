@@ -184,12 +184,10 @@ void _dse_waveout_write(LPSTR data, int size) {
 }
 
 void _dse_waveout_write2(LPSTR data) {
-	
 	WAVEHDR* current_frame;
 	int remain;
 	int result = 0;
 	int bytesCount = 0;
-	int size = wavFrameSize;
 
 	current_frame = &wavFrames[wavCurrentFrame];
 	current_frame->dwUser = 0;
@@ -199,21 +197,12 @@ void _dse_waveout_write2(LPSTR data) {
 	if (current_frame->dwFlags & WHDR_PREPARED)
 		waveOutUnprepareHeader(hWaveOut, current_frame, sizeof(WAVEHDR));
 		
-	if(size < (int)(wavFrameSize - current_frame->dwUser)) {
-		memcpy(current_frame->lpData + current_frame->dwUser, data, sizeof(data));
-		current_frame->dwUser += size;
-		return;
-	}
-		
-	remain = wavFrameSize - current_frame->dwUser;
-		
-	memcpy(current_frame->lpData + current_frame->dwUser, data, remain);
+	memcpy(current_frame->lpData, data, wavFrameSize);
 
-	size   -= remain;
-	data   += remain;
+	data   += wavFrameSize;
 
 	current_frame->dwBufferLength = wavFrameSize;
-
+	
 	waveOutPrepareHeader(hWaveOut, current_frame, sizeof(*current_frame));
 	waveOutWrite(hWaveOut, current_frame, sizeof(*current_frame));
 
@@ -224,11 +213,9 @@ void _dse_waveout_write2(LPSTR data) {
 	while(wavFreeFrameCount < (int)(wavFramesCount / 1.5)) {
 		Sleep(20);
 	}
-		
+	
 	wavCurrentFrame++;
 	wavCurrentFrame %= wavFramesCount;
-	bytesCount      += wavFramesCount;
-
 }
 
 ulong_t _dse_waveout_get_free_frames() {
