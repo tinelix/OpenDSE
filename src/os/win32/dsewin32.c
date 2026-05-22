@@ -62,8 +62,7 @@ int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 		_dse_free_frames = 32;
 		_dse_frames_count = 32;
 		
-		_dse_frame_samples = 430 * (mmio->audio.bit_depth / 8);
-		// or 397 * (mmio->audio.bit_depth / 8) with minimum frame sync loss
+		_dse_frame_samples = 158 * ((double)mmio->audio.sample_rate / 8000);
 	#endif
 
 	return result;

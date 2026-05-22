@@ -187,7 +187,6 @@ void _dse_waveout_write2(LPSTR data) {
 	WAVEHDR* current_frame;
 	int remain;
 	int result = 0;
-	int bytesCount = 0;
 
 	current_frame = &wavFrames[wavCurrentFrame];
 	current_frame->dwUser = 0;
@@ -210,7 +209,6 @@ void _dse_waveout_write2(LPSTR data) {
 	wavFreeFrameCount--;
 	LeaveCriticalSection(&wavSection);
 
-	// ждем завершения 2/3 буфера
 	while(wavFreeFrameCount < (int)(wavFramesCount / 1.5)) {
 		Sleep(20);
 	}
