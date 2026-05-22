@@ -62,7 +62,7 @@ int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 		_dse_free_frames = 8;
 		_dse_frames_count = 8;
 		
-		_dse_frame_samples = 126 * ((double)mmio->audio.sample_rate / 8000);
+		_dse_frame_samples = 125 * ((double)mmio->audio.sample_rate / 8000);
 	#endif
 
 	return result;
