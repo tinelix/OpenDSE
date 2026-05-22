@@ -105,7 +105,9 @@ int dse_get_frame_rms(double* rms, uint_t size) {
 	uint_t   smooth_stage;
 	ulong_t  max_value      = pow(2, stdmmio->audio.bit_depth);
 	
-	if(size >= 1024) {
+	if(size >= 8192) {
+		smooth_stage = 128 * (stdmmio->audio.bit_depth / 8);
+	} else if(size >= 1024) {
 		smooth_stage = 48 * (stdmmio->audio.bit_depth / 8);
 	} else if(size >= 512) {
 		smooth_stage = 24 * (stdmmio->audio.bit_depth / 8);

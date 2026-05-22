@@ -122,12 +122,7 @@ void _dse_wasapi_write(LPSTR data, int size) {
 	uchar_t*	buffer;
 	int			buffer_size; 
 
-	Sleep(70);
-
-	/*result = wasapiClient->GetCurrentPadding(&buffPadding);
-
-	if (result != S_OK)
-	break;*/
+	Sleep(50);
 
 	result = wasapiRenderClient->GetBuffer((double)size / wasapiSampleSize, (BYTE**)(&buffer));
 
@@ -140,8 +135,6 @@ void _dse_wasapi_write(LPSTR data, int size) {
 
 	if (result != S_OK)
 		return;
-
-	//CloseHandle(hEvent);
 }
 
 void _dse_wasapi_free() {
