@@ -103,8 +103,8 @@ int dse_get_frame_rms(double* rms, uint_t size) {
 	double   qsum_samples_r = 0.0;
 	uint_t   ch_buffer_size = 0;
 	uint_t   smooth_stage;
-	uint_t   sample_size    = stdmmio->audio.bit_depth / 8;
-	ulong_t  max_value      = pow(2, stdmmio->audio.bit_depth) / stdmmio->audio.channels;
+	uint_t   sample_size    = (double)(stdmmio->audio.bit_depth / 8) * stdmmio->audio.channels;
+	ulong_t  max_value      = (double)pow(2, stdmmio->audio.bit_depth) / stdmmio->audio.channels;
 	
 	if(stdmmio->_i->inbuf_size >= 8192)
 		smooth_stage = 64 * sample_size;
@@ -114,7 +114,7 @@ int dse_get_frame_rms(double* rms, uint_t size) {
 		smooth_stage = 8 * sample_size;
 
 	ch_buffer_size = 
-		((double)stdmmio->_i->inbuf_size / sample_size) / smooth_stage;
+		((double)stdmmio->_i->inbuf_size / smooth_stage) / sample_size;
 	
 	if(stdmmio->_i->inbuf_size == 0 && size == 0)
 		return 0;
