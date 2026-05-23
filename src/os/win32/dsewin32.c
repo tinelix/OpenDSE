@@ -62,7 +62,7 @@ int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 		_dse_free_frames = 8;
 		_dse_frames_count = 8;
 		
-		_dse_frame_samples = (int)(125 * ((double)mmio->audio.sample_rate / 8000));
+		_dse_frame_samples = 125 * ((double)mmio->audio.sample_rate / 8000);
 	#endif
 
 	return result;
@@ -128,7 +128,7 @@ int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 			}
 		}
 
-		mmio->bytes_read += (ulong_t)fread(inbuf, 1, buffer_size, mmio->filesrc);
+		mmio->bytes_read += fread(inbuf, 1, buffer_size, mmio->filesrc);
 
 		#ifdef WIN32_MME
 			_dse_waveout_write((LPSTR)((char*)inbuf), buffer_size);
@@ -156,8 +156,6 @@ int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 		_dse_wasapi_free();
 		#endif
 	#endif
-	
-	return 0;
 }
 
 int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
@@ -184,7 +182,7 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 	mmio->_i->inbuf_size        = frame_size;
 	mmio->audio.frame_samples   = _dse_frame_samples;
 
-	mmio->bytes_read += (ulong_t)fread(inbuf, 1, frame_size, mmio->filesrc);
+	mmio->bytes_read += fread(inbuf, 1, frame_size, mmio->filesrc);
 
 	#ifdef WIN32_MME
 		_dse_waveout_write2((LPSTR)((char*)inbuf));

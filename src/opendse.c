@@ -103,34 +103,34 @@ int dse_get_frame_rms(double* rms, uint_t size) {
 	double   qsum_samples_r = 0.0;
 	uint_t   ch_buffer_size = 0;
 	uint_t   smooth_stage;
-	ulong_t  max_value      = pow(2, stdmmio->audio.bit_depth);
+	uint_t   sample_size    = stdmmio->audio.bit_depth / 8;
+	ulong_t  max_value      = pow(2, stdmmio->audio.bit_depth) / stdmmio->audio.channels;
 	
-	if(size >= 8192) {
-		smooth_stage = 128 * (stdmmio->audio.bit_depth / 8);
-	} else if(size >= 1024) {
-		smooth_stage = 48 * (stdmmio->audio.bit_depth / 8);
-	} else if(size >= 512) {
-		smooth_stage = 24 * (stdmmio->audio.bit_depth / 8);
-	} else {
-		smooth_stage = 16 * (stdmmio->audio.bit_depth / 8);
-	}
+	if(stdmmio->_i->inbuf_size >= 8192)
+		smooth_stage = 64 * sample_size;
+	else if(stdmmio->_i->inbuf_size >= 1024)
+		smooth_stage = 32 * sample_size;
+	else
+		smooth_stage = 8 * sample_size;
 
 	ch_buffer_size = 
-		(stdmmio->_i->inbuf_size / (stdmmio->audio.bit_depth / 8)) / smooth_stage;
+		((double)stdmmio->_i->inbuf_size / sample_size) / smooth_stage;
 	
 	if(stdmmio->_i->inbuf_size == 0 && size == 0)
 		return 0;
 	
 	for(i = 0; i < stdmmio->_i->inbuf_size; i += smooth_stage) {
 		double sample_l = 0;
-		double sample_r = 0;
-		short  sample_16bit_l = 0;
-        short  sample_16bit_r = 0;
+		double    sample_r = 0;
+		short     sample_16bit_l = 0;
+        short     sample_16bit_r = 0;
+
+		if(i == stdmmio->_i->inbuf_size - (stdmmio->audio.channels)) {
+			break;
+		}
 
 		switch(stdmmio->audio.bit_depth) {
 			case 16:
-				if(i == stdmmio->_i->inbuf_size - (stdmmio->audio.channels))
-					break;
 				memcpy(&sample_16bit_l, &inbuf[i], sizeof(uint_t));
 				sample_l = (double)abs(sample_16bit_l);
 
@@ -147,14 +147,14 @@ int dse_get_frame_rms(double* rms, uint_t size) {
 		}
 
 		switch(stdmmio->audio.channels) {
-				case 2:
-					qsum_samples_l += (double)sample_l * sample_l;
-					qsum_samples_r += (double)sample_r * sample_r;
-					break;
-				default:
-					qsum_samples_l += (double)sample_l * sample_l;
-					break;
-			}
+			case 2:
+				qsum_samples_l += (double)sample_l * sample_l;
+				qsum_samples_r += (double)sample_r * sample_r;
+				break;
+			default:
+				qsum_samples_l += (double)sample_l * sample_l;
+				break;
+		}
 	}
 	
 	rms_l = (double)(sqrt(qsum_samples_l / ch_buffer_size)) / max_value;
