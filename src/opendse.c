@@ -15,9 +15,9 @@
 DSE_MMIO* 		stdmmio;
 
 int dse_get_version(DSEVERSION* version) {
-	version->major = 26;
-	version->minor = 5;
-	version->patch = 20;
+	version->major = 0;
+	version->minor = 0;
+	version->patch = 1;
 	return ctrue;
 }
 

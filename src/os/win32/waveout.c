@@ -62,6 +62,9 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	);
 
 	waveOutGetErrorText(result, errorText, 160);
+
+	outdev->product_name[0] = '\0';
+
 	#ifdef MSVC_GE_800
 			strcat_s(outdev->product_name, 12, "[waveOut] ");
 	        strcat_s(outdev->product_name, 140, devCaps.szPname);
