@@ -18,7 +18,7 @@ if "%OPENDSE_CC_TARGET%"=="" IF "%1"=="" (
 )
 
 if "%OPENDSE_CC_TARGET%"=="" (
-set CROCON_CC_TARGET=vc2
+set OPENDSE_CC_TARGET=vc2
 echo  Microsoft Visual C++ 2.0 - 2003 was selected as the default target. 
 echo.
 echo. You can change the default value by setting the OPENDSE_CC_TARGET variable.
