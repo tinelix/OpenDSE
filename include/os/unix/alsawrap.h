@@ -3,6 +3,7 @@
 
 #include "../../devices/outdev.h"
 #include "../../mmio/mmio.h"
+#include "../../utils/result.h"
 #include "dseunix.h"
 
 #include <alsa/asoundlib.h>

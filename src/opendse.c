@@ -96,52 +96,53 @@ dse_result dse_free_audio() {
 
 int dse_get_frame_rms(double* rms, uint_t size) {
 
-	uchar_t* inbuf = stdmmio->_i->inbuf;
-	double   rms_l = 0.0;
-	double   rms_r = 0.0;
-	uint_t   i = 0;
+	uchar_t* inbuf          = stdmmio->_i->inbuf;
+	double   rms_l          = 0.0;
+	double   rms_r          = 0.0;
+	uint_t   i              = 0;
 	double   qsum_samples_l = 0.0;
 	double   qsum_samples_r = 0.0;
+	uint_t   buffer_size    = stdmmio->_i->inbuf_size;
 	uint_t   ch_buffer_size = 0;
-	uint_t   smooth_stage;
+	uint_t   smooth_stage   = 4;
 	uint_t   sample_size    = (double)(stdmmio->audio.bit_depth / 8) * stdmmio->audio.channels;
 	ulong_t  max_value      = (double)pow(2, stdmmio->audio.bit_depth) / stdmmio->audio.channels;
 	
-	if(stdmmio->_i->inbuf_size >= 8192)
+	if(buffer_size >= 8192)
 		smooth_stage = 64 * sample_size;
-	else if(stdmmio->_i->inbuf_size >= 1024)
+	else if(buffer_size >= 1024)
 		smooth_stage = 32 * sample_size;
 	else
 		smooth_stage = 8 * sample_size;
 
 	ch_buffer_size = 
-		((double)stdmmio->_i->inbuf_size / smooth_stage) / sample_size;
+		((double)buffer_size / smooth_stage) / sample_size;
 	
-	if(stdmmio->_i->inbuf_size == 0 && size == 0)
+	if(buffer_size == 0 && size == 0)
 		return 0;
 	
-	for(i = 0; i < stdmmio->_i->inbuf_size; i += smooth_stage) {
-		double sample_l = 0;
+	for(i = 0; i < buffer_size; i += smooth_stage) {
+		double    sample_l = 0;
 		double    sample_r = 0;
 		short     sample_16bit_l = 0;
-        short     sample_16bit_r = 0;
+        	short     sample_16bit_r = 0;
 
-		if(i == stdmmio->_i->inbuf_size - (stdmmio->audio.channels)) {
+		if(i >= buffer_size - stdmmio->audio.channels) {
 			break;
 		}
 
 		switch(stdmmio->audio.bit_depth) {
 			case 16:
-				memcpy(&sample_16bit_l, &inbuf[i], sizeof(uint_t));
+				memcpy(&sample_16bit_l, &inbuf[i], sizeof(short));
 				sample_l = (double)abs(sample_16bit_l);
 
 				if(stdmmio->audio.channels == 2) {
-					memcpy(&sample_16bit_r, &inbuf[i + 2], sizeof(uint_t));
+					memcpy(&sample_16bit_r, &inbuf[i + 2], sizeof(short));
 					sample_r = (double)abs(sample_16bit_r);
 				}
 				break;
 			default:
-				if(i == stdmmio->_i->inbuf_size - (stdmmio->audio.channels))
+				if(i == buffer_size - (stdmmio->audio.channels))
 					break;
 				sample_l = (double)abs((char)inbuf[i]);
 				break;
