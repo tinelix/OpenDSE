@@ -28,10 +28,9 @@ int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	REFERENCE_TIME         reqBuffDuration;
     ulong_t                initStreamFlags  = (AUDCLNT_STREAMFLAGS_RATEADJUST | 
                                                AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM |
-                                               AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY |
-                                               AUDCLNT_STREAMFLAGS_EVENTCALLBACK);
+                                               AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY);
 
-    wasapiEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    //wasapiEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
 	outdev->product_name = (char*)malloc(161 * sizeof(char*));
 
@@ -99,7 +98,7 @@ int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 		0,  &wavFormat, nullptr
     );
 
-    wasapiClient->SetEventHandle(wasapiEvent);
+    //wasapiClient->SetEventHandle(wasapiEvent);
     
 	#ifdef MSVC_GE_800
         sprintf_s(outdev->product_name, 100, "[WASAPI] %s", mmVarProductNameCp);
@@ -136,11 +135,6 @@ int _dse_wasapi_allocate() {
 void _dse_wasapi_write(LPSTR data, int size) {
 	int     	result = 0;
 	uchar_t*	buffer;
-
-    result = WaitForSingleObject(wasapiEvent, INFINITE);
-    if (result != WAIT_OBJECT_0) {
-        return;
-    }
 
 	Sleep(50);
 
