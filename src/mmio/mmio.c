@@ -3,17 +3,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+#include <io.h>
+#define access _access
+#endif
+
 int	szFramebuf = 4096;
 
 int dse_mmio_open(DSE_MMIO* mmio, const char* path) {
 	
+	if (access(path, 0) != 0)
+		return -1;
+
 	#ifdef MSVC_GE_800
 		fopen_s(&mmio->filesrc, path, "rb");
 	#else
 		mmio->filesrc = fopen(path, "rb");
 	#endif
 
-	if(!mmio->filesrc)
+	if (mmio->filesrc == NULL)
 		return -1;
 
 	mmio->_i = (DSE_IMMIO*)malloc(sizeof(DSE_IMMIO));
