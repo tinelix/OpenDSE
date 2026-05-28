@@ -62,7 +62,7 @@ int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 		_dse_free_frames = 8;
 		_dse_frames_count = 8;
 		
-		_dse_frame_samples = 125 * ((double)mmio->audio.sample_rate / 8000);
+		_dse_frame_samples = 124 * ((double)mmio->audio.sample_rate / 8000);
 	#endif
 
 	return result;
@@ -198,7 +198,6 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 int _dse_free_audio(DSE_MMIO* mmio) {
 	uchar_t* inbuf         = mmio->_i->inbuf;
 	
-	free(inbuf);
 	#ifdef WIN32_MME
 		_dse_waveout_free();
 	#else
@@ -206,6 +205,16 @@ int _dse_free_audio(DSE_MMIO* mmio) {
 			_dse_wasapi_free();
 		#endif
 	#endif
+
+	if (mmio->filesrc) {
+		fclose(mmio->filesrc);
+		mmio->filesrc = NULL;
+	}
+
+	if (mmio && mmio->_i && mmio->_i->inbuf) {
+		free(mmio->_i->inbuf);
+		mmio->_i->inbuf = NULL;
+	}
 	
 	return 0;
 }
@@ -223,7 +232,7 @@ int _dse_close_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 		return _dse_waveout_close(outdev, mmio);
 	#else
 		#ifdef WIN32_WASAPI
-			return _dse_wasapi_close(outdev, mmio);
+			return _dse_wasapi_close();
 		#endif
 	#endif
 }

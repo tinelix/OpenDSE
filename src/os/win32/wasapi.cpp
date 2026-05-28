@@ -14,20 +14,24 @@ uint_t              wasapiChannels         =    2;
 
 IAudioClient2*      wasapiClient;
 IAudioRenderClient* wasapiRenderClient;
-HANDLE hEvent;
+HANDLE              wasapiEvent;
 
 int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     IMMDeviceEnumerator*   mmEnum;
     IMMDevice*             mmDev;
 	IPropertyStore*        mmProps;
 	PROPVARIANT            mmVarProductName;
+    char                   mmVarProductNameCp[144];
     int                    result           = 0;
     WAVEFORMATEX           wavFormat;
     const long             REFTIMES_PER_MS  = 10000L;  // 100 ns
 	REFERENCE_TIME         reqBuffDuration;
     ulong_t                initStreamFlags  = (AUDCLNT_STREAMFLAGS_RATEADJUST | 
                                                AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM |
-                                               AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY);
+                                               AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY |
+                                               AUDCLNT_STREAMFLAGS_EVENTCALLBACK);
+
+    wasapiEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
 	outdev->product_name = (char*)malloc(161 * sizeof(char*));
 
@@ -61,7 +65,20 @@ int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     
     if(result != S_OK)
         return -4;
+
+    mmDev->OpenPropertyStore(STGM_READ, &mmProps);
         
+    PropVariantInit(&mmVarProductName);
+    mmProps->GetValue(PKEY_Device_FriendlyName, &mmVarProductName);
+
+    // UTF-8 to Legacy CP conversion
+    WideCharToMultiByte(
+        CP_ACP, 0,
+        mmVarProductName.pwszVal, wcslen(mmVarProductName.pwszVal),
+        mmVarProductNameCp, 144, 
+        nullptr, nullptr
+    );
+
     mmDev->Release();
     
     wavFormat.wFormatTag      = WAVE_FORMAT_PCM;
@@ -79,13 +96,15 @@ int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     result = wasapiClient->Initialize(
         AUDCLNT_SHAREMODE_SHARED, initStreamFlags, 
         reqBuffDuration, 
-		reqBuffDuration,  &wavFormat, nullptr
+		0,  &wavFormat, nullptr
     );
+
+    wasapiClient->SetEventHandle(wasapiEvent);
     
 	#ifdef MSVC_GE_800
-		sprintf_s(outdev->product_name, 100, "WASAPI Default Playback Device");
+        sprintf_s(outdev->product_name, 100, "[WASAPI] %s", mmVarProductNameCp);
 	#else
-		sprintf(outdev->product_name, "WASAPI Default Playback Device");
+		sprintf(outdev->product_name, "[WASAPI] %s", mmVarProductNameCp);
 	#endif
 
     if(result != S_OK)
@@ -110,17 +129,18 @@ int _dse_wasapi_allocate() {
     
     if(result != S_OK)
         return -3;
-
-	hEvent = CreateEvent(nullptr, false, false, nullptr);
-	wasapiClient->SetEventHandle(hEvent);
     
     return 0;
 }
 
 void _dse_wasapi_write(LPSTR data, int size) {
-    int			result = 0;
+	int     	result = 0;
 	uchar_t*	buffer;
-	int			buffer_size; 
+
+    result = WaitForSingleObject(wasapiEvent, INFINITE);
+    if (result != WAIT_OBJECT_0) {
+        return;
+    }
 
 	Sleep(50);
 
@@ -138,13 +158,13 @@ void _dse_wasapi_write(LPSTR data, int size) {
 }
 
 void _dse_wasapi_free() {
+    wasapiClient->Stop();
     return;
 }
 
 int  _dse_wasapi_close() {
-	wasapiClient->Stop();
-	wasapiClient->Release();
-	wasapiRenderClient->Release();
+    wasapiClient->Release();
+    wasapiRenderClient->Release();
     return 0;
 }
 
