@@ -14,14 +14,14 @@
 
 DSE_MMIO* 		stdmmio;
 
-int dse_get_version(DSEVERSION* version) {
+dse_result dse_get_version(DSEVERSION* version) {
 	version->major = 0;
 	version->minor = 0;
 	version->patch = 1;
-	return ctrue;
+	return DSE_OK;
 }
 
-int dse_open_input(const char* path) {
+dse_result dse_open_input(const char* path) {
 	
 	int result = 0;
 
@@ -52,7 +52,7 @@ int dse_open_input(const char* path) {
 	return result;
 }
 
-int dse_close_input() {
+dse_result dse_close_input() {
 
 	int result = 0;
 
@@ -64,33 +64,34 @@ int dse_close_input() {
 	return result;
 }
 
-int dse_decode_audio() {
-	_dse_decode_audio(stdmmio, stdmmio->bytes_read, stdmmio->bytes_total);
-	return 0;
+dse_result dse_decode_audio() {
+	int result = 0;
+	result = _dse_decode_audio(stdmmio, stdmmio->bytes_read, stdmmio->bytes_total);
+	return DSE_OK;
 }
 
-int dse_decode_audio2(ulong_t offset) {
+dse_result dse_decode_audio2(ulong_t offset) {
 	return _dse_decode_audio2(stdmmio, offset);
 }
 
-int dse_alloc_audio() {
+dse_result dse_alloc_audio() {
 	int result;
 
 	result = _dse_alloc_audio(stdmmio);
 	return result;
 }
 
-int dse_is_busy() {
+dse_result dse_is_busy() {
 	int result = _dse_is_busy();
 
-	return result == ctrue;
+	return result == ctrue ? DSE_BUSY : DSE_OK;
 }
 
-int dse_free_audio() {
+dse_result dse_free_audio() {
 	int result;
 
 	result = _dse_free_audio(stdmmio);
-	return result;
+	return DSE_OK;
 }
 
 int dse_get_frame_rms(double* rms, uint_t size) {
@@ -168,9 +169,4 @@ int dse_get_frame_rms(double* rms, uint_t size) {
 	}
 	
 	return 1;
-}
-
-int dse_decode_audio3(ulong_t offset, ulong_t count) {
-	_dse_decode_audio(stdmmio, offset, count);
-	return 0; 
 }

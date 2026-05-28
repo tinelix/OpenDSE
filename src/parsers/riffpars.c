@@ -1,4 +1,5 @@
 #include <parsers/riffpars.h>
+#include <utils/result.h>
 #include <dsepriv.h>
 #include <stdlib.h>
 
@@ -11,7 +12,7 @@ int dse_riff_parse(DSE_MMIO* mmio, uchar_t* buffer) {
 	free(mmio->_i->inbuf);
 		
 	if(header.overrall_size == 0)
-		return -2;
+		return DSE_MMIO_UNSUPPORTED_FORMAT;
 		
 	/*if(memcmp(header.subformat_name, MKMAGIC32('W','A','V','E'), sizeof(uint_t)) != 0)
 		return -3;
@@ -20,10 +21,10 @@ int dse_riff_parse(DSE_MMIO* mmio, uchar_t* buffer) {
 		return -4;*/
 	
 	if(header.format_length != 0x10)
-		return -5;
+		return DSE_MMIO_UNSUPPORTED_FORMAT;
 		
 	if(header.coding_type != 0x1)
-		return -6;
+		return DSE_MMIO_UNSUPPORTED_FORMAT;
 	
 	if(header.bit_depth == 8)
 		mmio->audio.str_id = "LPCM-U8";

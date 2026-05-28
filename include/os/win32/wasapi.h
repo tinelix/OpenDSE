@@ -14,11 +14,11 @@
 extern "C" {
 #endif
 
-int         _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
-int         _dse_wasapi_allocate();
+dse_result  _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
+dse_result  _dse_wasapi_allocate();
 void        _dse_wasapi_free();
 void        _dse_wasapi_write(LPSTR data, int size);
-int         _dse_wasapi_close();
+dse_result  _dse_wasapi_close();
 
 #ifdef __cplusplus
 }

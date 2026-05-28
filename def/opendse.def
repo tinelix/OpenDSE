@@ -9,7 +9,6 @@ EXPORTS
 	dse_close_outdev
 	dse_decode_audio
 	dse_decode_audio2
-	dse_decode_audio3
 	dse_alloc_audio
 	dse_free_audio
 	dse_get_frame_rms

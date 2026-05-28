@@ -16,7 +16,7 @@ IAudioClient2*      wasapiClient;
 IAudioRenderClient* wasapiRenderClient;
 HANDLE              wasapiEvent;
 
-int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
+dse_result _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     IMMDeviceEnumerator*   mmEnum;
     IMMDevice*             mmDev;
 	IPropertyStore*        mmProps;
@@ -52,7 +52,7 @@ int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
              );
     
     if(result != S_OK)
-        return -1;
+        return DSE_OUTDEV_NOT_INITIALIZED;
     
     result = mmEnum->GetDefaultAudioEndpoint(
         eRender, eConsole, &mmDev
@@ -63,7 +63,7 @@ int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     );
     
     if(result != S_OK)
-        return -4;
+        return DSE_OUTDEV_NOT_INITIALIZED;
 
     mmDev->OpenPropertyStore(STGM_READ, &mmProps);
         
@@ -90,7 +90,7 @@ int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     wasapiBitDepth            = mmio->audio.bit_depth;
     wasapiChannels            = mmio->audio.channels;
 
-	outdev->max_channels      = 2;
+	outdev->max_channels      = mmio->audio.channels > 2 ? 2 : mmio->audio.channels;
 
     result = wasapiClient->Initialize(
         AUDCLNT_SHAREMODE_SHARED, initStreamFlags, 
@@ -107,29 +107,29 @@ int _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	#endif
 
     if(result != S_OK)
-        return -4;
+        return DSE_OUTDEV_NOT_INITIALIZED;
         
-    return 0;
+    return DSE_OK;
 }
 
-int _dse_wasapi_allocate() {
+dse_result _dse_wasapi_allocate() {
     int result = 0;
 
 	result = wasapiClient->GetService(__uuidof(IAudioRenderClient), (void**)(&wasapiRenderClient));
 	if(result != S_OK)
-		return -1;
+        return DSE_OUTDEV_NOT_INITIALIZED;
 
     result = wasapiClient->GetBufferSize(&wasapiFramesCount);
     
     if(result != S_OK)
-        return -2;
+        return DSE_ALLOCATION_ERROR;
 
     result = wasapiClient->Start();
     
     if(result != S_OK)
-        return -3;
+        return DSE_INTERNAL_ERROR;
     
-    return 0;
+    return DSE_OK;
 }
 
 void _dse_wasapi_write(LPSTR data, int size) {
@@ -156,10 +156,10 @@ void _dse_wasapi_free() {
     return;
 }
 
-int  _dse_wasapi_close() {
+dse_result _dse_wasapi_close() {
     wasapiClient->Release();
     wasapiRenderClient->Release();
-    return 0;
+    return DSE_OK;
 }
 
 #endif

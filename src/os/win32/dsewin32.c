@@ -43,7 +43,7 @@ int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 	return TRUE;
 }
 
-int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
+dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 
 	double force_fpi_load = sqrt(4);
 
@@ -68,7 +68,7 @@ int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	return result;
 }
 
-int _dse_alloc_audio(DSE_MMIO* mmio) {
+dse_result _dse_alloc_audio(DSE_MMIO* mmio) {
 	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
 	uchar_t* inbuf         = mmio->_i->inbuf;
 
@@ -80,13 +80,13 @@ int _dse_alloc_audio(DSE_MMIO* mmio) {
 		#endif
 	#endif
 
-	inbuf                  = (uchar_t*)malloc(
-								_dse_frame_samples * sample_size * sizeof(uchar_t)
-							);
-	return 0;
+	inbuf = (uchar_t*)malloc(
+							_dse_frame_samples * sample_size * sizeof(uchar_t)
+			);
+	return DSE_OK;
 }
 
-int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
+dse_result _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 	
 	uchar_t* inbuf         = mmio->_i->inbuf;
 	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
@@ -158,7 +158,7 @@ int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 	#endif
 }
 
-int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
+dse_result _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 
 	uchar_t* inbuf         = mmio->_i->inbuf;
 	uint_t   sample_size   = (mmio->audio.bit_depth / 2) * mmio->audio.channels;
@@ -195,7 +195,7 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 	return 0;
 }
 
-int _dse_free_audio(DSE_MMIO* mmio) {
+dse_result _dse_free_audio(DSE_MMIO* mmio) {
 	uchar_t* inbuf         = mmio->_i->inbuf;
 	
 	#ifdef WIN32_MME
@@ -219,15 +219,15 @@ int _dse_free_audio(DSE_MMIO* mmio) {
 	return 0;
 }
 
-cbool _dse_is_busy() {
+dse_result _dse_is_busy() {
      #ifdef WIN32_MME
      _dse_free_frames = _dse_waveout_get_free_frames();
      #endif
-	 return _dse_free_frames != _dse_frames_count;
+	 return _dse_free_frames != _dse_frames_count ? DSE_OK : DSE_BUSY;
 }
 
 
-int _dse_close_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
+dse_result _dse_close_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	#ifdef WIN32_MME
 		return _dse_waveout_close(outdev, mmio);
 	#else
