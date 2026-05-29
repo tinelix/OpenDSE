@@ -2,7 +2,7 @@
 
 #include <os/unix/alsawrap.h>
 
-snd_pcm_t* hAlsa;
+snd_pcm_t*           hAlsa;
 uint_t               _dse_alsa_sample_rate;
 uint_t               _dse_alsa_frame_size;
 uint_t               _dse_alsa_bit_depth;
@@ -11,8 +11,10 @@ uchar_t*             _dse_alsa_buffer;
 snd_pcm_hw_params_t* _dse_alsa_hw_params;
 
 int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
-    int result    = 0;
-    int dir       = 0;
+    int    result         = 0;
+    int    dir            = 0;
+    uint_t sample_rate    = mmio->audio.sample_rate;
+    uint_t channels       = mmio->audio.channels;
     
     _dse_alsa_sample_rate = mmio->audio.sample_rate;
     _dse_alsa_bit_depth   = mmio->audio.bit_depth;
@@ -21,34 +23,38 @@ int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     outdev->sample_rate   = mmio->audio.sample_rate;
     outdev->bit_depth     = mmio->audio.bit_depth;
     outdev->channels      = mmio->audio.channels;
-    outdev->product_name  = (char*)malloc(161 * sizeof(char*));
+    outdev->product_name  = (char*)malloc(161 * sizeof(char));
     strcpy(outdev->product_name, "ALSA Default Playback Device");
     
     result = snd_pcm_open(
         &hAlsa, "default", SND_PCM_STREAM_PLAYBACK, 0
     );
     
-    snd_pcm_hw_params_malloc(&_dse_alsa_hw_params);
-    snd_pcm_hw_params_any(hAlsa, _dse_alsa_hw_params);
+    result = snd_pcm_hw_params_malloc(&_dse_alsa_hw_params);
+    result = snd_pcm_hw_params_any(hAlsa, _dse_alsa_hw_params);
     
     // Near sample rate and channels
-    snd_pcm_hw_params_set_rate_near(hAlsa, _dse_alsa_hw_params, &_dse_alsa_sample_rate, 0);
+    #ifdef UNIX_LEGACY
+        result = snd_pcm_hw_params_set_rate_near(hAlsa, _dse_alsa_hw_params, sample_rate, dir);
+    #else
+        result = snd_pcm_hw_params_set_rate_near(hAlsa, _dse_alsa_hw_params, &sample_rate, 0);
+    #endif
 
     if(mmio->audio.bit_depth == 8) {
-        snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_U8);
+        result = snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_U8);
     } else if(mmio->audio.bit_depth == 16) {
-        snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_S16_LE);
+        result = snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_S16_LE);
     } else if(mmio->audio.bit_depth == 24) {
-        snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_S24_LE);
+        result = snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_S24_LE);
     }
     
-    snd_pcm_hw_params_set_channels(hAlsa, _dse_alsa_hw_params, mmio->audio.channels);
-    
-    snd_pcm_hw_params_set_access(
+    result = snd_pcm_hw_params_set_channels(hAlsa, _dse_alsa_hw_params, mmio->audio.channels);
+    result = snd_pcm_hw_params_set_access(
         hAlsa, _dse_alsa_hw_params, SND_PCM_ACCESS_RW_INTERLEAVED
     );
+    result = snd_pcm_hw_params(hAlsa, _dse_alsa_hw_params);
     
-    snd_pcm_hw_params(hAlsa, _dse_alsa_hw_params);
+    return result;
 }
 
 int  _dse_alsa_allocate(uint_t size, uint_t sample_size, uint_t count) {
@@ -58,22 +64,25 @@ int  _dse_alsa_allocate(uint_t size, uint_t sample_size, uint_t count) {
     snd_pcm_sw_params_t* swParams;
     
     snd_pcm_sw_params_malloc(&swParams);
+    
+    result = snd_pcm_prepare(hAlsa);
+    
     snd_pcm_sw_params_current(hAlsa, swParams);
     
-    snd_pcm_sw_params_set_avail_min(hAlsa, swParams, minBufferSize);
-    snd_pcm_sw_params_set_start_threshold(hAlsa, swParams, 0);
-    snd_pcm_sw_params(hAlsa, swParams);
+    result = snd_pcm_sw_params_set_avail_min(hAlsa, swParams, minBufferSize);
+    
+    result = snd_pcm_sw_params_set_start_threshold(hAlsa, swParams, 0);
+    
+    result = snd_pcm_sw_params(hAlsa, swParams);
     
     #ifdef UNIX_LEGACY
         snd_pcm_hw_params_get_rate(_dse_alsa_hw_params, &_dse_alsa_sample_rate);
     #else
         snd_pcm_hw_params_get_rate(_dse_alsa_hw_params, &_dse_alsa_sample_rate, 0);
     #endif
-
-    result = snd_pcm_prepare(hAlsa);
     
     _dse_alsa_frame_size = size;
-    _dse_alsa_buffer     = (uchar_t*)malloc(_dse_alsa_frame_size  * sample_size * count);
+    //_dse_alsa_buffer     = (uchar_t*)malloc(_dse_alsa_frame_size  * sample_size * count);
 
     return result;
 }
