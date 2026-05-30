@@ -32,7 +32,9 @@ C_BACKEND       = -DUNIX_OSS
 endif
 
 ifeq ($(OPENDSE_LEGACY),true)
-C_LEGACY        = -DUNIX_LEGACY -fno-optimize-sibling-calls
+C_LEGACY        = -DUNIX_LEGACY
+else
+C_LEGACY        = -fno-optimize-sibling-calls
 endif
 
 ifeq ($(OPENDSE_DEBUG),true)
