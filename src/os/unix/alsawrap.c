@@ -1,3 +1,35 @@
+/*
+ * The Open Digital Sound Engine (OpenDSE) is free software and is licensed under 
+ * the BSD 3-Clause license.
+ *
+ * Copyright (c) 2026, Dmitry Tretyakov <tinelix@mail.ru>
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #ifdef UNIX_ALSA
 
 #include <os/unix/alsawrap.h>
@@ -9,6 +41,17 @@ uint_t               _dse_alsa_bit_depth;
 uint_t               _dse_alsa_channels;
 uchar_t*             _dse_alsa_buffer;
 snd_pcm_hw_params_t* _dse_alsa_hw_params;
+
+ /*
+  *  This file contains a frontend implementation for the Advanced Linux Sound 
+  *  Architecture (ALSA), licensed under the GNU Lesser General Public License 2.1 
+  *  or later.
+  *
+  *  For the implementation to work, make sure you have libasound1 or libasound2 
+  *  installed, version 0.9.1 or above.
+  *
+  *  Some versions shipped with Linux distributions may result in a SIGSEGV error.
+  */
 
 int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     int    result         = 0;
@@ -32,13 +75,9 @@ int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     
     result = snd_pcm_hw_params_malloc(&_dse_alsa_hw_params);
     result = snd_pcm_hw_params_any(hAlsa, _dse_alsa_hw_params);
-    
-    // Near sample rate and channels
-    #ifdef UNIX_LEGACY
-        result = snd_pcm_hw_params_set_rate_near(hAlsa, _dse_alsa_hw_params, sample_rate, dir);
-    #else
-        result = snd_pcm_hw_params_set_rate_near(hAlsa, _dse_alsa_hw_params, &sample_rate, 0);
-    #endif
+    result = snd_pcm_hw_params_set_access(
+        hAlsa, _dse_alsa_hw_params, SND_PCM_ACCESS_RW_INTERLEAVED
+    );
 
     if(mmio->audio.bit_depth == 8) {
         result = snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_U8);
@@ -48,10 +87,14 @@ int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
         result = snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_S24_LE);
     }
     
-    result = snd_pcm_hw_params_set_channels(hAlsa, _dse_alsa_hw_params, mmio->audio.channels);
-    result = snd_pcm_hw_params_set_access(
-        hAlsa, _dse_alsa_hw_params, SND_PCM_ACCESS_RW_INTERLEAVED
-    );
+        result = snd_pcm_hw_params_set_channels(hAlsa, _dse_alsa_hw_params, mmio->audio.channels);
+    
+    // Near sample rate
+    #ifdef UNIX_LEGACY
+        result = snd_pcm_hw_params_set_rate_near(hAlsa, _dse_alsa_hw_params, sample_rate, dir);
+    #else
+        result = snd_pcm_hw_params_set_rate_near(hAlsa, _dse_alsa_hw_params, &sample_rate, 0);
+    #endif
     result = snd_pcm_hw_params(hAlsa, _dse_alsa_hw_params);
     
     return result;
@@ -111,10 +154,13 @@ void _dse_alsa_write2(uchar_t* data) {
 }
 
 void _dse_alsa_wait() {
-    snd_pcm_wait(hAlsa, -1);
+    #ifndef UNIX_LEGACY
+        snd_pcm_wait(hAlsa, -1);
+    #endif
 }
 
 int _dse_alsa_close() {
+    snd_pcm_drain(hAlsa);
     snd_pcm_close(hAlsa);
 }
 

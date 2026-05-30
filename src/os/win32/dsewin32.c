@@ -1,7 +1,8 @@
 /*
- * BSD 3-Clause License
+ * The Open Digital Sound Engine (OpenDSE) is free software and is licensed under 
+ * the BSD 3-Clause license.
  *
- * Copyright (c) 2026, Dmitry Tretyakov
+ * Copyright (c) 2026, Dmitry Tretyakov <tinelix@mail.ru>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,6 +39,14 @@
 int _dse_free_frames = 0;
 int _dse_frames_count = 0;
 int _dse_frame_samples = 0;
+
+ /*
+  *  This file contains a frontend wrappers for Windows NT and 9x, including WaveOut
+  *  and WASAPI.
+  * 
+  *  The implementation by David Overton is used with technical modifications:
+  *  https://github.com/Planet-Source-Code/david-overton-playing-audio-in-windows-using-waveout-interface__3-4422
+  */
 
 int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 	return TRUE;
