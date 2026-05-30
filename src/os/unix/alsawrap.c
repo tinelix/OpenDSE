@@ -48,8 +48,8 @@ snd_pcm_hw_params_t* _dse_alsa_hw_params;
   *  or later.
   *
   *  For the implementation to work correctly, make sure you have libasound1 or 
-  *  libasound2 version 0.9.1 or higher and a Linux kernel version 2.4 or higher 
-  *  with ALSA support installed.
+  *  libasound2 version 0.9.1 or higher and a Linux kernel version 2.4 and/or 
+  *  higher with ALSA support installed.
   *
   *  Some libasound versions shipped with Linux distributions may cause a SIGSEGV 
   *  error.
