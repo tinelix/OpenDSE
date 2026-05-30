@@ -44,8 +44,7 @@ extern "C" {
 
 // Private definitions intended for use only within a library or modules.
 
-#define MKMAGIC32(uc1, uc2, uc3, uc4) \
-	(uc4 | (uc3 << 8) | (uc2 << 16) | (uc1 << 24)) 
+#define MKMAGIC32(uc1, uc2, uc3, uc4) (uc4 | (uc3 << 8) | (uc2 << 16) | (uc1 << 24)) 
 
 typedef struct _dse_mediafmt_priv {
 	const uint_t magic_nums;
