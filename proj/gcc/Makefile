@@ -32,11 +32,11 @@ C_BACKEND       = -DUNIX_OSS
 endif
 
 ifeq ($(OPENDSE_LEGACY),true)
-C_LEGACY        = -DUNIX_LEGACY
+C_LEGACY        = -DUNIX_LEGACY -fno-optimize-sibling-calls
 endif
 
 ifeq ($(OPENDSE_DEBUG),true)
-C_FLAGS         =  -O0 -fPIC -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF $(C_BACKEND) $(C_LEGACY) -g3 -fno-omit-frame-pointer -fno-optimize-sibling-calls
+C_FLAGS         =  -O0 -fPIC -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF $(C_BACKEND) $(C_LEGACY) -g3 -fno-omit-frame-pointer
 else
 C_FLAGS         =  -O2 -fPIC -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF $(C_BACKEND) $(C_LEGACY)
 endif
