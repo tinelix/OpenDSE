@@ -47,10 +47,12 @@ snd_pcm_hw_params_t* _dse_alsa_hw_params;
   *  Architecture (ALSA), licensed under the GNU Lesser General Public License 2.1 
   *  or later.
   *
-  *  For the implementation to work, make sure you have libasound1 or libasound2 
-  *  installed, version 0.9.1 or above.
+  *  For the implementation to work correctly, make sure you have libasound1 or 
+  *  libasound2 version 0.9.1 or higher and a Linux kernel version 2.4 or higher 
+  *  with ALSA support installed.
   *
-  *  Some versions shipped with Linux distributions may result in a SIGSEGV error.
+  *  Some libasound versions shipped with Linux distributions may cause a SIGSEGV 
+  *  error.
   */
 
 int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
