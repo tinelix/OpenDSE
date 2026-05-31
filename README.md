@@ -38,7 +38,7 @@ Windows NT 4.0 and below do not support interactive variable input. To build wit
 ```bat
 make vc2 y
 ```
-...and then use OpenDSE.lib in your projects to import OpenDSE.
+...and then use `OpenDSE.lib` from `out/bin` in your projects to import OpenDSE.
 
 ### Linux
 
@@ -50,7 +50,7 @@ chmod +x ./make.sh                        # if the *.sh script does not run
 ./make.sh --prefix /usr/local/lib
 ```
 
-...and then use libopendse.a in your projects to import OpenDSE.
+...and then use `libopendse.a` from `out/bin` in your projects to import OpenDSE.
 
 For extended support of legacy Linux distributions, a special flag `--enable-legacy-support` is provided, as well as `--enable-debug` for building the library with debug symbols.
 
