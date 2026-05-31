@@ -44,7 +44,7 @@ make vc2 y
 
 To use OpenDSE in GCC, run the Shell script in your terminal:
 
-```bat
+```sh
 cd [OpenDSE root]/build
 chmod +x ./make.sh    # if the *.sh script does not run
 ./make.sh --prefix /usr/local/lib
