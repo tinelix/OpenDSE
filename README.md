@@ -49,6 +49,16 @@ _Mininal target:_ GCC 3.2 with glibc 2.0 and libasound2 0.9.1+
 To use OpenDSE in GCC, you need to follow several steps:
     
 1. Install the `libasound2` or `libasound1` development package from your distribution;
+
+```sh
+# Ubuntu / Debian
+sudo apt-get install libasound2-dev
+# openSUSE / SUSE Linux
+sudo zypper install alsa-devel # or install from YaST2
+# Arch/Artix Linux
+sudo pacman -S alsa-lib
+```
+
 2. Run the Shell script in your terminal:
 
 ```sh
