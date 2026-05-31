@@ -10,7 +10,7 @@ _**Current status:**_ Public Alpha Testing, WIP
   supports local WAV files only yet
   
 * **Lightweight in use** \
-  depending on the operating system, OpenDSE consumes on average from 400 kB to 2 MB of RAM
+  depending on the OS, OpenDSE consumes on **average from 400 KB to 2 MB** of RAM and **up to 5%** of the CPU load
 
 * **Multiple audio frontends** \
   supports WASAPIv2 and WaveOut for Windows and ALSA for Linux
