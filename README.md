@@ -42,7 +42,7 @@ make
 > [!NOTE]
 > 1. Windows NT 4.0 and below do not support interactive variable input. To build with debug symbols on these systems, specify the following arguments to the script:
 > 
-> ```bat
+>    ```bat
 > make vc2 y
 > ```
 > 2. 16-bit Windows versions is not supported.
