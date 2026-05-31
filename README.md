@@ -2,7 +2,7 @@
 
 FOSS cross-platform audio library and API for Windows and Linux, including legacy systems.
 
-_**Current status:**_ Public alpha
+_**Current status:**_ Public Alpha Testing, WIP
 
 ## Main Features
 
