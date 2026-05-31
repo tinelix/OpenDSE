@@ -26,7 +26,7 @@ _**Current status:**_ Public Alpha Testing, WIP
 
 ## Building
 
-### Windows NT and 9x
+### Windows
 
 _Minimal target:_ Windows NT 3.1 with Microsoft Visual C++ 2.0
 
