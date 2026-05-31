@@ -19,8 +19,8 @@ FOSS cross-platform audio library and API for Windows and Linux, including legac
 * **RMS value for each frame** \
   allows developers to create simple sound visualizations
   
-#####  * if the library is compiled in Microsoft Visual C++ 2.0
-##### ** tested in SUSE Linux 8.1
+######  * if the library is compiled in Microsoft Visual C++ 2.0
+###### ** tested in SUSE Linux 8.1
 
 ## Building
 
