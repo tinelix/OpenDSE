@@ -50,9 +50,9 @@ chmod +x ./make.sh                        # if the *.sh script does not run
 ./make.sh --prefix /usr/local/lib
 ```
 
-For extended support of legacy Linux distributions, a special flag `--enable-legacy-support` is provided, as well as `--enable-debug` for building the library with debug symbols.
-
 ...and then use libopendse.a in your projects to import OpenDSE.
+
+For extended support of legacy Linux distributions, a special flag `--enable-legacy-support` is provided, as well as `--enable-debug` for building the library with debug symbols.
 
 ## Using OpenDSE in your own programs
 
