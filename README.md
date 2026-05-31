@@ -60,4 +60,6 @@ Use the `opendse.h` C/C++ header file from [`include` directory](https://github.
 
 ## License
 
-OpenDSE licensed under [BSD 3-Clause License](https://github.com/tinelix/OpenDSE?tab=BSD-3-Clause-1-ov-file). Absolutely free and accessible to **everyone**: FOSS developers, businesses, and hobbyists, which is something [BASS with an alternative implementation](https://www.un4seen.com/doc/#bass/bass.html) certainly cannot boast.
+**OpenDSE licensed under [BSD 3-Clause License](https://github.com/tinelix/OpenDSE?tab=BSD-3-Clause-1-ov-file).**
+
+Absolutely free and accessible to **everyone**: FOSS developers, businesses, and hobbyists, which is something [BASS with an alternative implementation](https://www.un4seen.com/doc/#bass/bass.html) certainly cannot boast.
