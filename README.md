@@ -40,11 +40,12 @@ make
 ...and then use `OpenDSE.lib` from `out/bin` in your projects to import OpenDSE.
 
 > [!NOTE]
-> Windows NT 4.0 and below do not support interactive variable input. To build with debug symbols on these systems, specify the following arguments to the script:
+> 1. `Windows NT 4.0 and below do not support interactive variable input. To build with debug symbols on these systems, specify the following arguments to the script:
 > 
 > ```bat
 > make vc2 y
 > ```
+> 2. 16-bit Windows versions is not supported.
 
 ### Linux
 
