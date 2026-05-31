@@ -28,7 +28,7 @@ _**Current status:**_ Public Alpha Testing, WIP
 
 ### Windows NT and 9x
 
-_Mininal target:_ Windows NT 3.1 with Microsoft Visual C++ 2.0
+_Minimal target:_ Windows NT 3.1 with Microsoft Visual C++ 2.0
 
 To use OpenDSE in Microsoft Visual C++, run the BAT script in the VS Command Prompt profile:
     
