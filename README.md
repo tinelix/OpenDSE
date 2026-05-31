@@ -46,7 +46,10 @@ make vc2 y
 
 _Mininal target:_ GCC 3.2 with glibc 2.0 and libasound2 0.9.1+
 
-To use OpenDSE in GCC, run the Shell script in your terminal:
+To use OpenDSE in GCC, you need to follow several steps:
+    
+1. Install the `libasound2` or `libasound1` development package from your distribution;
+2. Run the Shell script in your terminal:
 
 ```sh
 cd [OpenDSE root]/build
@@ -54,7 +57,7 @@ chmod +x ./make.sh                        # if the *.sh script does not run
 ./make.sh --prefix /usr/local/lib
 ```
 
-...and then use `libopendse.a` from `out/bin` in your projects to import OpenDSE.
+3. Use `libopendse.a` from `out/bin` in your projects to import OpenDSE.
 
 For extended support of legacy Linux distributions, a special flag `--enable-legacy-support` is provided, as well as `--enable-debug` for building the library with debug symbols.
 
