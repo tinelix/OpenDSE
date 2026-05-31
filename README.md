@@ -24,7 +24,9 @@ FOSS cross-platform audio library and API for Windows and Linux, including legac
 
 ## Building
 
-### Windows NT and 9x, including Windows XP and newer
+### Windows NT and 9x
+
+_Mininal target:_ Windows NT 3.1 with Microsoft Visual C++ 2.0
 
 To use OpenDSE in Microsoft Visual C++, run the BAT script in the VS Command Prompt profile:
     
@@ -41,6 +43,8 @@ make vc2 y
 ...and then use `OpenDSE.lib` from `out/bin` in your projects to import OpenDSE.
 
 ### Linux
+
+_Mininal target:_ GCC 3.2 with glibc 2.0 and libasound2 0.9.1+
 
 To use OpenDSE in GCC, run the Shell script in your terminal:
 
