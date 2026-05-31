@@ -2,13 +2,15 @@
 
 FOSS cross-platform audio library and API for Windows and Linux, including legacy systems.
 
+_Current status: Public alpha_
+
 ## Main Features
 
 * **PCM samples playback** \
   supports local WAV files only yet
   
 * **Lightweight in use** \
-  depending on the operating system, OpenDSE consumes on average from 400 to 2 MB of RAM
+  depending on the operating system, OpenDSE consumes on average from 400 kB to 2 MB of RAM
 
 * **Multiple audio frontends** \
   supports WASAPIv2 and WaveOut for Windows and ALSA for Linux
@@ -19,8 +21,8 @@ FOSS cross-platform audio library and API for Windows and Linux, including legac
 * **RMS value for each frame** \
   allows developers to create simple sound visualizations
   
-<sub>* if the library is compiled in Microsoft Visual C++ 2.0
-<br>** tested in SUSE Linux 8.1</sub>
+<i><sub>* if the library is compiled in Microsoft Visual C++ 2.0
+<br>** tested in SUSE Linux 8.1</sub></i>
 
 ## Building
 
