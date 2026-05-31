@@ -37,12 +37,13 @@ cd [OpenDSE root]\build
 make
 ```
 
-Windows NT 4.0 and below do not support interactive variable input. To build with debug symbols on these systems, specify the following arguments to the script:
-
-```bat
-make vc2 y
-```
 ...and then use `OpenDSE.lib` from `out/bin` in your projects to import OpenDSE.
+
+> [!NOTE]
+> Windows NT 4.0 and below do not support interactive variable input. To build with debug symbols on these systems, specify the following arguments to the script:
+> 
+> ```bat
+make vc2 y```
 
 ### Linux
 
@@ -63,7 +64,7 @@ sudo pacman -S alsa-lib
 sudo emerge media-libs/alsa-lib
 ```
 
-   ...or build it [yourself](https://www.alsa-project.org/files/pub/lib/);
+...or build it [yourself](https://www.alsa-project.org/files/pub/lib/);
 
 2. Run the Shell script in your terminal:
 
@@ -75,7 +76,8 @@ chmod +x ./make.sh                        # if the *.sh script does not run
 
 3. Use `libopendse.a` from `out/bin` in your projects to import OpenDSE.
 
-For extended support of legacy Linux distributions, a special flag `--enable-legacy-support` is provided, as well as `--enable-debug` for building the library with debug symbols.
+> [!NOTE]
+> For extended support of legacy Linux distributions, a special flag `--enable-legacy-support` is provided, as well as `--enable-debug` for building the library with debug symbols.
 
 ## Using OpenDSE in your own programs
 
