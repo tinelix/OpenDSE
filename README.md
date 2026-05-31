@@ -6,8 +6,8 @@ _**Current status:**_ Public Alpha Testing, WIP
 
 ## Main Features
 
-* **PCM samples playback** \
-  supports local WAV files only yet
+* **LPCM 8 and 16-bit samples playback** \
+  supports local uncompressed RIFF/WAV files only yet
   
 * **Lightweight in use** \
   depending on the OS, OpenDSE consumes on **average from 400 KB to 2 MB** of RAM and **up to 5%** of the CPU load
