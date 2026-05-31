@@ -46,7 +46,7 @@ To use OpenDSE in GCC, run the Shell script in your terminal:
 
 ```sh
 cd [OpenDSE root]/build
-chmod +x ./make.sh    # if the *.sh script does not run
+chmod +x ./make.sh                        # if the *.sh script does not run
 ./make.sh --prefix /usr/local/lib
 ```
 
