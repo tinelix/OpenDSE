@@ -4,19 +4,19 @@ FOSS cross-platform audio library and API for Windows and Linux, including legac
 
 ## Main Features
 
-* PCM samples playback
+* **PCM samples playback** \
   supports local WAV files only yet
   
-* Lightweight in use
+* **Lightweight in use** \
   depending on the operating system, OpenDSE consumes on average from 400 to 2 MB of RAM
 
-* Multiple frontends
+* **Multiple audio frontends** \
   supports WASAPIv2 and WaveOut for Windows and ALSA for Linux
 
-* Backward compatibility
+* **Backward compatibility** \
   Windows NT 3.1* or above, Linux 2.4 with ALSA 0.9.1** or above is required
   
-* RMS value for each frame
+* **RMS value for each frame** \
   allows developers to create simple sound visualizations
   
 #####  * if the library is compiled in Microsoft Visual C++ 2.0
