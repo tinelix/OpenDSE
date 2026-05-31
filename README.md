@@ -57,6 +57,8 @@ sudo apt-get install libasound2-dev
 sudo zypper install alsa-devel # or install from YaST2
 # Arch/Artix Linux
 sudo pacman -S alsa-lib
+# Gentoo Linux
+sudo emerge media-libs/alsa-lib
 ```
 
 2. Run the Shell script in your terminal:
