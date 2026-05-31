@@ -61,7 +61,7 @@ sudo pacman -S alsa-lib
 sudo emerge media-libs/alsa-lib
 ```
 
-...or build it [yourself](https://www.alsa-project.org/files/pub/lib/);
+   ...or build it [yourself](https://www.alsa-project.org/files/pub/lib/);
 
 2. Run the Shell script in your terminal:
 
