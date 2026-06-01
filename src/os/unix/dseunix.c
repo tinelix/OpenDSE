@@ -110,7 +110,7 @@ int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 		fseek(mmio->filesrc, offset, SEEK_SET);
 
 		while(_dse_free_frames < _dse_frames_count - 1) {
-			usleep(50);
+			usleep(50000);
 			// TODO: Implement native APIs
 			
 			if(_dse_free_frames == _dse_frames_count) {
