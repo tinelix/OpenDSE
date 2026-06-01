@@ -38,8 +38,10 @@
 #include <dsepriv.h>
 
 #ifdef WIN32
-#include <io.h>
-#define access _access
+	#include <io.h>
+	#define access _access
+#else
+	#include <unistd.h>
 #endif
 
 int	szFramebuf = 4096;
