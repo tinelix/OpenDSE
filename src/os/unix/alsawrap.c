@@ -157,6 +157,7 @@ void _dse_alsa_write2(uchar_t* data) {
 
 void _dse_alsa_wait() {
     #ifndef UNIX_LEGACY
+        usleep(7600);
         snd_pcm_wait(hAlsa, -1);
     #endif
 }
