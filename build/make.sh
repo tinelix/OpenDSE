@@ -25,7 +25,7 @@ Standard options:
     
 Backends support:
     --with-alsa               enable ALSA support
-    --with-oss                enable Open Sound System (OSS) support
+    --with-oss                enable Open Sound System (OSS) support (not implemented)
 EOF
 }
 

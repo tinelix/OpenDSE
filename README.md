@@ -80,6 +80,8 @@ chmod +x ./make.sh                        # if the *.sh script does not run
 
 > [!NOTE]
 > For extended support of legacy Linux distributions, a special flag `--enable-legacy-support` is provided, as well as `--enable-debug` for building the library with debug symbols.
+>
+> To build the library with only ALSA support, use the `--with-alsa` flag.
 
 ## Using OpenDSE in your own programs
 
