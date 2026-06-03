@@ -1,6 +1,5 @@
 /*
- * The Open Digital Sound Engine (OpenDSE) is free software and is licensed under 
- * the BSD 3-Clause license.
+ * BSD 3-Clause License
  *
  * Copyright (c) 2026, Dmitry Tretyakov <tinelix@mail.ru>
  *
@@ -30,41 +29,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OPENDSE_DEVICES_OUTDEV_H  
-#define OPENDSE_DEVICES_OUTDEV_H
+#ifndef OPENDSE_OS_UNIX_ALSAWRAP_H
+#define OPENDSE_OS_UNIX_ALSAWRAP_H
 
-#include "../utils/c_exts.h"
+#include "../../devices/outdev.h"
+#include "../../mmio/mmio.h"
+#include "../../utils/result.h"
+#include "dseunix.h"
 
-#ifdef OPENDSE_LIB
-	#include <dsepriv.h>
-#endif
+#include <alsa/asoundlib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+extern snd_pcm_t* hAlsa;
 
-typedef struct _dse_output_dev {
-	uint_t        id;
-	uint_t        sample_rate;
-	uint_t        bit_depth;
-	uint_t        channels;
-	char*         product_name;
-	uchar_t       max_channels : 4;
-	cbool         volume_control;
-	cbool         balance_control;
-	#ifdef OPENDSE_LIB
-		DSE_IDEVICE*  _i;
-	#else
-		void*         _i;
-	#endif
-} DSE_OUTDEV;
-
-int dse_open_outdev(DSE_OUTDEV* outdev);
-//int dse_write_outdev(uchar_t* buffer, int size);
-int dse_close_outdev(DSE_OUTDEV* outdev);  
-
-#ifdef __cplusplus
-}
-#endif
+dse_result  _dse_pulseaudio_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
+dse_result  _dse_pulseaudio_prepare(uint_t size, uint_t sample_size, uint_t count);
+dse_result  _dse_pulseaudio_free();
+void        _dse_pulseaudio_write(uchar_t* data, int size);
+void        _dse_pulseaudio_write2(uchar_t* data);
 
 #endif

@@ -14,8 +14,9 @@
 extern "C" {
 #endif
 
+int         _dse_select_frontend(dse_frontend_t frontend);
 dse_result  _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
-dse_result  _dse_wasapi_allocate();
+dse_result  _dse_wasapi_prepare();
 void        _dse_wasapi_free();
 void        _dse_wasapi_write(LPSTR data, int size);
 dse_result  _dse_wasapi_close();

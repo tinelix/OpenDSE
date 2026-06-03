@@ -33,7 +33,10 @@
 #ifdef UNIX
 
 #include <os/unix/dseunix.h>
+#include <devices/frontend.h>
 #include <math.h>
+
+dse_frontend_t _dse_frontend = DSE_FRONTEND_AUTO;
 
  /*
   *  This file contains a frontend wrappers for UNIX/Linux, including ALSA.
@@ -57,25 +60,72 @@ int _dse_free_frames = 0;
 int _dse_frames_count = 0;
 int _dse_frame_samples = 0;
 
-int _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
-
-	int result = 0;
+dse_result _dse_select_frontend(dse_frontend_t frontend) {
+	int result = -1;
 	
-	#ifdef UNIX_ALSA
-	_dse_alsa_open(outdev, mmio);
-	#endif
+	switch(frontend) {
+		case DSE_FRONTEND_AUTO:
+			#ifdef UNIX_PULSEAUDIO
+				_dse_frontend = DSE_FRONTEND_UNIX_PULSEAUDIO;
+				result = 0;
+			#else
+				#ifdef UNIX_ALSA
+					_dse_frontend = DSE_FRONTEND_LINUX_ALSA;
+					result = 0;
+				#endif
+			#endif
+			break;
+		case DSE_FRONTEND_AUTO_LEGACY:
+			#ifdef UNIX_ALSA
+				_dse_frontend = DSE_FRONTEND_LINUX_ALSA;
+				result = 0;
+			#endif
+			break;
+		case DSE_FRONTEND_LINUX_ALSA:
+			#ifdef UNIX_ALSA
+				_dse_frontend = DSE_FRONTEND_LINUX_ALSA;
+				result = 0;
+			#endif
+			break;
+		case DSE_FRONTEND_LINUX_PULSEAUDIO:
+			#ifdef UNIX_PULSEAUDIO
+				_dse_frontend = DSE_FRONTEND_UNIX_PULSEAUDIO;
+				result = 0;
+			#endif
+			break;
+	}
+}
+
+dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
+
+	int result = -1;
+	
+	switch(_dse_frontend) {
+		case DSE_FRONTEND_LINUX_ALSA:
+			#ifdef UNIX_ALSA
+				_dse_alsa_open(outdev, mmio);
+				outdev->_i->frontend = DSE_FRONTEND_LINUX_ALSA;
+			#endif
+			break;
+		case DSE_FRONTEND_LINUX_PULSEAUDIO:
+			#ifdef UNIX_PULSEAUDIO
+				_dse_pulseaudio_open(outdev, mmio);
+				outdev->_i->frontend = DSE_FRONTEND_UNIX_PULSEAUDIO;
+			#endif
+			break;
+	}
 	
 	_dse_frame_samples = 384;
 
 	return result;
 }
 
-int _dse_alloc_audio(DSE_MMIO* mmio) {
+dse_result _dse_alloc_audio(DSE_MMIO* mmio) {
 	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
 	uchar_t* inbuf         = mmio->_i->inbuf;
 
 	#ifdef UNIX_ALSA
-		_dse_alsa_allocate(_dse_frame_samples, sample_size, 32);
+		_dse_alsa_prepare(_dse_frame_samples, sample_size, 32);
 		_dse_free_frames = 32;
 		_dse_frames_count = 32;
 	#endif
@@ -83,10 +133,10 @@ int _dse_alloc_audio(DSE_MMIO* mmio) {
 	inbuf   = (uchar_t*)malloc(
                             _dse_frame_samples * sample_size * sizeof(uchar_t)
                         );
-	return 0;
+	return DSE_OK;
 }
 
-int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
+dse_result _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 	
 	uchar_t* inbuf         = mmio->_i->inbuf;
 	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
@@ -136,7 +186,7 @@ int _dse_decode_audio(DSE_MMIO* mmio, ulong_t offset, ulong_t count) {
 	
 }
 
-int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
+dse_result _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 
 	uchar_t* inbuf         = mmio->_i->inbuf;
 	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
@@ -150,9 +200,10 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 
 	if(mmio->bytes_total - offset < frame_size)
 		return -3;
-	
+		
 	#ifdef UNIX_ALSA
-		_dse_alsa_wait();
+		if(_dse_frontend == DSE_FRONTEND_LINUX_ALSA)
+			_dse_alsa_wait();
 	#endif
 	
 	fseek(mmio->filesrc, offset, SEEK_SET);
@@ -168,20 +219,21 @@ int _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 		_dse_alsa_write2(inbuf);
 	#endif
 
-	return 0;
+	return DSE_OK;
 }
 
-int _dse_free_audio(DSE_MMIO* mmio) {
+dse_result _dse_free_audio(DSE_MMIO* mmio) {
 	uchar_t* inbuf         = mmio->_i->inbuf;
 	
 	if(inbuf)
 		free(inbuf);
 	
 	#ifdef UNIX_ALSA
-		_dse_alsa_free();
+		if(_dse_frontend == DSE_FRONTEND_LINUX_ALSA)
+			_dse_alsa_free();
 	#endif
 	
-	return 0;
+	return DSE_OK;
 }
 
 cbool _dse_is_busy() {
@@ -194,10 +246,11 @@ cbool _dse_is_busy() {
 
 int _dse_close_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	#ifdef UNIX_ALSA
-		_dse_alsa_close();
+		if(_dse_frontend == DSE_FRONTEND_LINUX_ALSA)
+			_dse_alsa_close();
 	#endif
 	
-	return 0;
+	return DSE_OK;
 }
 
 #endif
