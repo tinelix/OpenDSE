@@ -87,7 +87,7 @@ dse_result _dse_select_frontend(dse_frontend_t frontend) {
 				result = 0;
 			#endif
 			break;
-		case DSE_FRONTEND_LINUX_PULSEAUDIO:
+		case DSE_FRONTEND_UNIX_PULSEAUDIO:
 			#ifdef UNIX_PULSEAUDIO
 				_dse_frontend = DSE_FRONTEND_UNIX_PULSEAUDIO;
 				result = 0;
@@ -107,7 +107,7 @@ dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 				outdev->_i->frontend = DSE_FRONTEND_LINUX_ALSA;
 			#endif
 			break;
-		case DSE_FRONTEND_LINUX_PULSEAUDIO:
+		case DSE_FRONTEND_UNIX_PULSEAUDIO:
 			#ifdef UNIX_PULSEAUDIO
 				_dse_pulseaudio_open(outdev, mmio);
 				outdev->_i->frontend = DSE_FRONTEND_UNIX_PULSEAUDIO;
