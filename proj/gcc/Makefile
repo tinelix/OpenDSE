@@ -22,11 +22,14 @@ BIN_DIR         =  $(DSE_LIB_ROOT)/out/bin
 OBJ_DIR         =  $(DSE_LIB_ROOT)/out/obj
 
 CC              =  gcc
-OPENDSE_BACKEND =  alsa
+OPENDSE_BACKEND =? pulseaudio
 
 ifeq ($(OPENDSE_BACKEND),alsa)
 C_BACKEND       = -DUNIX_ALSA
 LD_LIBS         = -lasound
+else ifeq ($(OPENDSE_BACKEND),pulseaudio)
+C_BACKEND       = -DUNIX_PULSEAUDIO
+LD_LIBS         = -lpulse -lpulse-simple
 else
 C_BACKEND       = -DUNIX_OSS
 endif

@@ -6,6 +6,7 @@ CC_FLAGS="-Wall -Wextra -O2"
 LD_FLAGS=""
 OPENDSE_DEBUG=false
 OPENDSE_LEGACY=false
+OPENDSE_BACKEND=pulseaudio
 
 show_help() {
     cat << EOF
@@ -18,9 +19,13 @@ Help options:
 
 Standard options:
     --enable-debug            build and include debug symbols to binaries
-    --enable-legacy-support   enable OSS legacy support for Linux/BSD (not implemented yet)
+    --enable-legacy-support   enable support for Linux/BSD outdated versions
     --disable-logging         do not log configure debug information
     --prefix                  install library into specified path
+    
+Backends support:
+    --with-alsa               enable ALSA support
+    --with-oss                enable Open Sound System (OSS) support
 EOF
 }
 
@@ -36,6 +41,14 @@ while [ $# -gt 0 ]; do
           ;;
       --enable-legacy-support)
           OPENDSE_LEGACY=true
+          shift
+          ;;
+      --with-alsa)
+          OPENDSE_BACKEND=alsa
+          shift
+          ;;
+        --with-oss)
+          OPENDSE_BACKEND=oss
           shift
           ;;
       --prefix)
@@ -56,7 +69,7 @@ makeOpenDSE() {
     echo "[2/3] Building OpenDSE from source..."
 
     cd $OPENDSE_ROOT/proj/gcc
-    make OPENDSE_DEBUG=$OPENDSE_DEBUG OPENDSE_LEGACY=$OPENDSE_LEGACY
+    make OPENDSE_DEBUG=$OPENDSE_DEBUG OPENDSE_LEGACY=$OPENDSE_LEGACY OPENDSE_BACKEND=$OPENDSE_BACKEND
     
     if [ $? -ne 0 ]; then
         echo "OpenDSE build failed with error code $?."
