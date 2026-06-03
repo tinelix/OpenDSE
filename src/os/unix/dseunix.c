@@ -61,36 +61,37 @@ int _dse_frames_count = 0;
 int _dse_frame_samples = 0;
 
 dse_result _dse_select_frontend(dse_frontend_t frontend) {
-	int result = -1;
+	
+	int result = DSE_OUTDEV_UNSUPPORTED_BACKEND;
 	
 	switch(frontend) {
 		case DSE_FRONTEND_AUTO:
 			#ifdef UNIX_PULSEAUDIO
 				_dse_frontend = DSE_FRONTEND_UNIX_PULSEAUDIO;
-				result = 0;
+				result = DSE_OK;
 			#else
 				#ifdef UNIX_ALSA
 					_dse_frontend = DSE_FRONTEND_LINUX_ALSA;
-					result = 0;
+					result = DSE_OK;
 				#endif
 			#endif
 			break;
 		case DSE_FRONTEND_AUTO_LEGACY:
 			#ifdef UNIX_ALSA
 				_dse_frontend = DSE_FRONTEND_LINUX_ALSA;
-				result = 0;
+				result = DSE_OK;
 			#endif
 			break;
 		case DSE_FRONTEND_LINUX_ALSA:
 			#ifdef UNIX_ALSA
 				_dse_frontend = DSE_FRONTEND_LINUX_ALSA;
-				result = 0;
+				result = DSE_OK;
 			#endif
 			break;
 		case DSE_FRONTEND_UNIX_PULSEAUDIO:
 			#ifdef UNIX_PULSEAUDIO
 				_dse_frontend = DSE_FRONTEND_UNIX_PULSEAUDIO;
-				result = 0;
+				result = DSE_OK;
 			#endif
 			break;
 	}
@@ -98,20 +99,27 @@ dse_result _dse_select_frontend(dse_frontend_t frontend) {
 
 dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 
-	int result = -1;
+	int result = DSE_OUTDEV_UNSUPPORTED_BACKEND;
+	
+	outdev->_i = malloc(sizeof(DSE_IDEVICE));
 	
 	switch(_dse_frontend) {
 		case DSE_FRONTEND_LINUX_ALSA:
 			#ifdef UNIX_ALSA
 				_dse_alsa_open(outdev, mmio);
 				outdev->_i->frontend = DSE_FRONTEND_LINUX_ALSA;
+				result = DSE_OK;
 			#endif
 			break;
 		case DSE_FRONTEND_UNIX_PULSEAUDIO:
 			#ifdef UNIX_PULSEAUDIO
 				_dse_pulseaudio_open(outdev, mmio);
 				outdev->_i->frontend = DSE_FRONTEND_UNIX_PULSEAUDIO;
+				result = DSE_OK;
 			#endif
+			break;
+		default:
+			_dse_select_frontend(DSE_FRONTEND_AUTO);
 			break;
 	}
 	
@@ -124,11 +132,21 @@ dse_result _dse_alloc_audio(DSE_MMIO* mmio) {
 	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
 	uchar_t* inbuf         = mmio->_i->inbuf;
 
-	#ifdef UNIX_ALSA
-		_dse_alsa_prepare(_dse_frame_samples, sample_size, 32);
-		_dse_free_frames = 32;
-		_dse_frames_count = 32;
-	#endif
+	switch(_dse_frontend) {
+		case DSE_FRONTEND_LINUX_ALSA:
+			#ifdef UNIX_ALSA
+				_dse_alsa_prepare(_dse_frame_samples, sample_size, 32);
+			#endif
+			break;
+		case DSE_FRONTEND_UNIX_PULSEAUDIO:
+			#ifdef UNIX_PULSEAUDIO
+				_dse_pulseaudio_prepare(_dse_frame_samples, sample_size, 32);
+			#endif
+			break;
+	}
+	
+	_dse_free_frames = 32;
+	_dse_frames_count = 32;
 
 	inbuf   = (uchar_t*)malloc(
                             _dse_frame_samples * sample_size * sizeof(uchar_t)
@@ -214,10 +232,19 @@ dse_result _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 	mmio->bytes_read += fread(inbuf, 1, frame_size, mmio->filesrc);
 	
 	mmio->_i->inbuf_size = frame_size;
-
-	#ifdef UNIX_ALSA
-		_dse_alsa_write2(inbuf);
-	#endif
+	
+	switch(_dse_frontend) {
+		case DSE_FRONTEND_LINUX_ALSA:
+			#ifdef UNIX_ALSA
+				_dse_alsa_write2(inbuf);
+			#endif
+			break;
+		case DSE_FRONTEND_UNIX_PULSEAUDIO:
+			#ifdef UNIX_PULSEAUDIO
+				_dse_pulseaudio_write2(inbuf);
+			#endif
+			break;
+	}
 
 	return DSE_OK;
 }

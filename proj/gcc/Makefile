@@ -53,6 +53,7 @@ OBJECTS         =  $(OBJ_DIR)/outdev.o \
                    $(OBJ_DIR)/parser.o \
                    $(OBJ_DIR)/riffpars.o \
                    $(OBJ_DIR)/alsawrap.o \
+                   $(OBJ_DIR)/pa_wrap.o \
                    $(OBJ_DIR)/dseunix.o \
                    $(OBJ_DIR)/opendse.o
 

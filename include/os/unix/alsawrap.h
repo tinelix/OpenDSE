@@ -37,6 +37,8 @@
 #include "../../utils/result.h"
 #include "dseunix.h"
 
+#ifdef UNIX_ALSA
+
 #include <alsa/asoundlib.h>
 
 extern snd_pcm_t* hAlsa;
@@ -48,5 +50,7 @@ void        _dse_alsa_write(uchar_t* data, int size);
 void        _dse_alsa_write2(uchar_t* data);
 void        _dse_alsa_wait();
 dse_result  _dse_alsa_close();
+
+#endif
 
 #endif

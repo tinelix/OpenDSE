@@ -32,12 +32,22 @@
 #ifndef OPENDSE_OS_UNIX_DSEUNIX_H
 #define OPENDSE_OS_UNIX_DSEUNIX_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "../../mmio/mmio.h"
 #include "../../devices/outdev.h"
+#include "../../utils/result.h"
 
 #ifdef UNIX_ALSA
     #include "alsawrap.h"
     #include <alsa/asoundlib.h>
+#endif
+
+#ifdef UNIX_PULSEAUDIO
+    #include "pa_wrap.h"
 #endif
 
 #ifdef __cplusplus

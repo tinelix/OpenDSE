@@ -29,22 +29,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OPENDSE_OS_UNIX_ALSAWRAP_H
-#define OPENDSE_OS_UNIX_ALSAWRAP_H
+#ifndef OPENDSE_OS_UNIX_PA_WRAP_H
+#define OPENDSE_OS_UNIX_PA_WRAP_H
 
 #include "../../devices/outdev.h"
 #include "../../mmio/mmio.h"
 #include "../../utils/result.h"
 #include "dseunix.h"
 
-#include <alsa/asoundlib.h>
+#include <pulse/simple.h>
 
-extern snd_pcm_t* hAlsa;
+#ifdef UNIX_PULSEAUDIO
 
 dse_result  _dse_pulseaudio_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
 dse_result  _dse_pulseaudio_prepare(uint_t size, uint_t sample_size, uint_t count);
 dse_result  _dse_pulseaudio_free();
 void        _dse_pulseaudio_write(uchar_t* data, int size);
 void        _dse_pulseaudio_write2(uchar_t* data);
+
+#endif
 
 #endif

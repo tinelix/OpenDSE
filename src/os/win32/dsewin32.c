@@ -41,7 +41,7 @@ int _dse_free_frames = 0;
 int _dse_frames_count = 0;
 int _dse_frame_samples = 0;
 
-dse_frontend_t _dse_frontend;
+dse_frontend_t _dse_frontend = DSE_FRONTEND_AUTO;
 
  /*
   *  This file contains a frontend wrappers for Windows NT and 9x, including WaveOut
@@ -53,36 +53,38 @@ int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 }
 
 int _dse_select_frontend(dse_frontend_t frontend) {
-	int result = -1;
+	int result = DSE_OUTDEV_UNSUPPORTED_BACKEND;
+	
+	outdev->_i = malloc(sizeof(DSE_IDEVICE));
 	
 	switch(frontend) {
 		case DSE_FRONTEND_AUTO:
 			#ifdef WIN32_WASAPI
 				_dse_frontend = DSE_FRONTEND_WINDOWS_WASAPI;
-				result = 0;
+				result = DSE_OK;
 			#else
 				#ifdef WIN32_MME
 					_dse_frontend = DSE_FRONTEND_WINDOWS_WAVEIO;
-					result = 0;
+					result = DSE_OK;
 				#endif
 			#endif
 			break;
 		case DSE_FRONTEND_AUTO_LEGACY:
 			#ifdef WIN32_MME
 				_dse_frontend = DSE_FRONTEND_WINDOWS_WAVEIO;
-				result = 0;
+				result = DSE_OK;
 			#endif
 			break;
 		case DSE_FRONTEND_WINDOWS_WASAPI:
 			#ifdef WIN32_WASAPI
 				_dse_frontend = DSE_FRONTEND_WINDOWS_WASAPI;
-				result = 0;
+				result = DSE_OK;
 			#endif
 			break;
 		case DSE_FRONTEND_WINDOWS_WAVEIO:
 			#ifdef WIN32_MME
 				_dse_frontend = DSE_FRONTEND_WINDOWS_WAVEIO;
-				result = 0;
+				result = DSE_OK;
 			#endif
 			break;
 	}
@@ -94,7 +96,7 @@ dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 
 	double force_fpi_load = sqrt(4);
 
-	int result = -1;
+	int result = DSE_OUTDEV_UNSUPPORTED_BACKEND;
 
 	#ifdef WIN32_WASAPI
 			_dse_free_frames = 8;
@@ -113,12 +115,17 @@ dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 		case DSE_FRONTEND_WINDOWS_WASAPI:
 			#ifdef WIN32_WASAPI
 				_dse_wasapi_open(outdev, mmio);
+				result = DSE_OK;
 			#endif
 			break;
 		case DSE_FRONTEND_WINDOWS_WAVEIO:
 			#ifdef WIN32_MME
 				_dse_waveout_open(outdev, mmio);
+				result = DSE_OK;
 			#endif
+			break;
+		default:
+			_dse_select_frontend(DSE_FRONTEND_AUTO);
 			break;
 	}
 

@@ -33,9 +33,11 @@
 #ifdef UNIX_PULSEAUDIO
 
 #include <os/unix/pa_wrap.h>
+#include <pthread.h>
 
-pa_simple*           _dse_pa_simple_api;
-uint_t               _dse_pa_frame_size;
+static pthread_mutex_t _dse_pa_mutex       = PTHREAD_MUTEX_INITIALIZER;
+       pa_simple*      _dse_pa_simple_api;
+       uint_t          _dse_pa_frame_size;
 
  /*
   *  This file contains a frontend implementation for the PulseAudio Simple API, 
@@ -43,6 +45,7 @@ uint_t               _dse_pa_frame_size;
   */
 
 int _dse_pulseaudio_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
+    int             err = 0;
     pa_sample_spec  pa_sample_spec;
  
     pa_sample_spec.format   = PA_SAMPLE_S16LE;
@@ -57,16 +60,16 @@ int _dse_pulseaudio_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     
     switch(mmio->audio.bit_depth) {
         case 8:
-            format = PA_SAMPLE_U8;
+            pa_sample_spec.format = PA_SAMPLE_U8;
             break;
         case 16:
-            format = PA_SAMPLE_S16LE;
+            pa_sample_spec.format = PA_SAMPLE_S16LE;
             break;
         case 24:
-            format = PA_SAMPLE_S24LE;
+            pa_sample_spec.format = PA_SAMPLE_S24LE;
             break;
         case 32:
-            format = PA_SAMPLE_S32LE;
+            pa_sample_spec.format = PA_SAMPLE_S32LE;
             break;
     }
     
@@ -74,7 +77,7 @@ int _dse_pulseaudio_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
         NULL, "Open Digital Sound Engine",
         PA_STREAM_PLAYBACK, NULL,
         "PulseAudio Playback",
-        &pa_sample_spec, NULL, NULL, NULL,
+        &pa_sample_spec, NULL, NULL, &err
     );
     
     return 0;
@@ -94,15 +97,18 @@ int _dse_pulseaudio_free() {
 }
 
 void _dse_pulseaudio_write(uchar_t* data, int size) {
-    if(size > _dse_alsa_frame_size)
-        return;
+    int err = 0;
     
-    pa_simple_write(data, size, &err);
+    if(size > _dse_pa_frame_size)
+        return;
+        
+    pa_simple_write(_dse_pa_simple_api, data, size, &err);
 }
 
 void _dse_pulseaudio_write2(uchar_t* data) {
     int err = 0;
-    pa_simple_write(data, _dse_pa_frame_size, &err);
+    
+    pa_simple_write(_dse_pa_simple_api, data, _dse_pa_frame_size, &err);
 }
 
 #endif
