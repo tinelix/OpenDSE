@@ -56,8 +56,10 @@ snd_pcm_hw_params_t* _dse_alsa_hw_params;
   */
 
 int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
-    int    result         = 0;
-    int    dir            = 0;
+    int                 result         = 0;
+    int                 dir            = 0;
+    snd_pcm_format_t    format         = SND_PCM_FORMAT_UNKNOWN;
+    
     uint_t sample_rate    = mmio->audio.sample_rate;
     uint_t channels       = mmio->audio.channels;
     
@@ -81,15 +83,33 @@ int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
         hAlsa, _dse_alsa_hw_params, SND_PCM_ACCESS_RW_INTERLEAVED
     );
 
-    if(mmio->audio.bit_depth == 8) {
-        result = snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_U8);
-    } else if(mmio->audio.bit_depth == 16) {
-        result = snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_S16_LE);
-    } else if(mmio->audio.bit_depth == 24) {
-        result = snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, SND_PCM_FORMAT_S24_LE);
+    switch(mmio->audio.bit_depth) {
+        case 8:
+            format = SND_PCM_FORMAT_U8;
+            break;
+        case 16:
+            format = SND_PCM_FORMAT_S16_LE;
+            break;
+        case 18:
+            format = SND_PCM_FORMAT_S18_3LE;
+            break;
+        case 20:
+            format = SND_PCM_FORMAT_S20_3LE;
+            break;
+        case 24:
+            format = SND_PCM_FORMAT_S24_3LE;
+            break;
+        case 32:
+            format = SND_PCM_FORMAT_S32_LE;
+            break;
+        default:
+            format = SND_PCM_FORMAT_SPECIAL;
+            break;
     }
     
-        result = snd_pcm_hw_params_set_channels(hAlsa, _dse_alsa_hw_params, mmio->audio.channels);
+    snd_pcm_hw_params_set_format(hAlsa, _dse_alsa_hw_params, format);
+    
+    result = snd_pcm_hw_params_set_channels(hAlsa, _dse_alsa_hw_params, mmio->audio.channels);
     
     // Near sample rate
     #ifdef UNIX_LEGACY
@@ -97,12 +117,13 @@ int _dse_alsa_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     #else
         result = snd_pcm_hw_params_set_rate_near(hAlsa, _dse_alsa_hw_params, &sample_rate, 0);
     #endif
+    
     result = snd_pcm_hw_params(hAlsa, _dse_alsa_hw_params);
     
     return result;
 }
 
-int  _dse_alsa_allocate(uint_t size, uint_t sample_size, uint_t count) {
+int  _dse_alsa_prepare(uint_t size, uint_t sample_size, uint_t count) {
     
     int                  minBufferSize = size;
     int                  result = 0;

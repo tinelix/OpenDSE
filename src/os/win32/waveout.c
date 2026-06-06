@@ -45,6 +45,9 @@
   *  The code is for backward compatibility only and is not recommended for 
   *  use on Windows 8 or later.
   *
+  *  The implementation by David Overton is used with technical modifications:
+  *  https://github.com/Planet-Source-Code/david-overton-playing-audio-in-windows-using-waveout-interface__3-4422
+  *
   */
 
 static CRITICAL_SECTION wavSection;
@@ -138,7 +141,7 @@ int _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	return 0; 
 }
 
-WAVEHDR* _dse_waveout_allocate(uint_t size, uint_t sample_size, uint_t count) {
+WAVEHDR* _dse_waveout_prepare(uint_t size, uint_t sample_size, uint_t count) {
 	
 	uchar_t* buffer;
 	int      i;

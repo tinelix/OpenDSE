@@ -37,6 +37,7 @@
 
 #include <stdio.h>
 #include <utils/c_exts.h>
+#include <devices/frontend.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,6 +58,10 @@ typedef struct _dse_mmio_priv {
 	uchar_t*  		inbuf;
 	ulong_t         inbuf_size;
 } DSE_IMMIO;
+
+typedef struct _dse_idevice_priv {
+	dse_frontend_t frontend;
+} DSE_IDEVICE;
 
 #ifdef __cplusplus
 }

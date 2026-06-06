@@ -53,6 +53,10 @@ dse_result dse_get_version(DSEVERSION* version) {
 	return DSE_OK;
 }
 
+dse_result dse_select_frontend(dse_frontend_t frontend) {
+	_dse_select_frontend(frontend);
+}
+
 dse_result dse_open_input(const char* path) {
 	
 	int result = 0;

@@ -151,7 +151,7 @@ dse_result _dse_wasapi_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
     return DSE_OK;
 }
 
-dse_result _dse_wasapi_allocate() {
+dse_result _dse_wasapi_prepare() {
     int result = 0;
 
 	result = wasapiClient->GetService(__uuidof(IAudioRenderClient), (void**)(&wasapiRenderClient));

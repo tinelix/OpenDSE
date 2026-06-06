@@ -8,7 +8,7 @@
 extern HWAVEOUT hWaveOut;
 
 dse_result      _dse_waveout_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
-WAVEHDR* 		_dse_waveout_allocate(uint_t size, uint_t sample_size, uint_t count);
+WAVEHDR* 		_dse_waveout_prepare(uint_t size, uint_t sample_size, uint_t count);
 void     		_dse_waveout_free();
 void     		_dse_waveout_write(LPSTR data, int size);
 void            _dse_waveout_write2(LPSTR data);

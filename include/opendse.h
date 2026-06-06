@@ -41,9 +41,10 @@
 // Mutlimedia I/O
 #include "mmio/mmio.h"
 
-// I/O devies
+// I/O devices and frontends
 #include "devices/indev.h"
 #include "devices/outdev.h"
+#include "devices/frontend.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,6 +70,7 @@ typedef struct _dse_version {
 
 // API functions
 
+dse_result dse_select_frontend(dse_frontend_t frontend);
 dse_result dse_get_version(DSEVERSION* version);
 dse_result dse_open_input(const char* path);
 dse_result dse_close_input();

@@ -35,6 +35,10 @@
 
 #include "../utils/c_exts.h"
 
+#ifdef OPENDSE_LIB
+	#include <dsepriv.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,10 +52,15 @@ typedef struct _dse_output_dev {
 	uchar_t       max_channels : 4;
 	cbool         volume_control;
 	cbool         balance_control;
+	#ifdef OPENDSE_LIB
+		DSE_IDEVICE*  _i;
+	#else
+		void*         _i;
+	#endif
 } DSE_OUTDEV;
 
 int dse_open_outdev(DSE_OUTDEV* outdev);
-int dse_write_outdev(uchar_t* buffer, int size);
+//int dse_write_outdev(uchar_t* buffer, int size);
 int dse_close_outdev(DSE_OUTDEV* outdev);  
 
 #ifdef __cplusplus

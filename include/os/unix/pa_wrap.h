@@ -1,6 +1,5 @@
 /*
- * The Open Digital Sound Engine (OpenDSE) is free software and is licensed under 
- * the BSD 3-Clause license.
+ * BSD 3-Clause License
  *
  * Copyright (c) 2026, Dmitry Tretyakov <tinelix@mail.ru>
  *
@@ -30,34 +29,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _OPENDSE_UTILS_RESULT_H
-#define _OPENDSE_UTILS_RESULT_H
+#ifndef OPENDSE_OS_UNIX_PA_WRAP_H
+#define OPENDSE_OS_UNIX_PA_WRAP_H
 
-// OpenDSE API result codes
-typedef enum {
-	DSE_OK                         =    0,
-	DSE_NOT_FOUND                  =   -1,
-	DSE_ACCESS_DENIED              =   -2,
-	DSE_BUSY                       =   -3,
-	DSE_ALLOCATION_ERROR           =   -4,
-	DSE_NOT_IMPLEMENTED            =   -5,
-	DSE_INTERNAL_ERROR             =   -6,
+#include "../../devices/outdev.h"
+#include "../../mmio/mmio.h"
+#include "../../utils/result.h"
+#include "dseunix.h"
 
-	// Output Devices
+#include <pulse/simple.h>
 
-	DSE_OUTDEV_NOT_INITIALIZED     = -101,
-	DSE_OUTDEV_UNSUPPORTED_BACKEND = -102, 
-	DSE_OUTDEV_UNSUPPORTED_PARAMS  = -103,
+#ifdef UNIX_PULSEAUDIO
 
-	// Mutlimedia I/O
-	DSE_MMIO_EMPTY_FILE            = -301,
-	DSE_MMIO_EOF                   = -302,  // <-- if the EOF is reached
-	DSE_MMIO_UNKNOWN_FORMAT        = -303,  // <-- if file header not found in the 4 kB first block
-	DSE_MMIO_UNSUPPORTED_FORMAT    = -304,  // <-- if the decoder does not support the required 
-	                                        //     encoding parameters
-	DSE_MMIO_BAD_FRAME             = -305   // <-- if the decoder has encountered a header and 
-	                                        //     cannot deсode or convert the data
+dse_result  _dse_pulseaudio_open(DSE_OUTDEV* outdev, DSE_MMIO* mmio);
+dse_result  _dse_pulseaudio_prepare(uint_t size, uint_t sample_size, uint_t count);
+dse_result  _dse_pulseaudio_free();
+void        _dse_pulseaudio_write(uchar_t* data, int size);
+void        _dse_pulseaudio_write2(uchar_t* data);
 
-} dse_result;
+#endif
 
 #endif

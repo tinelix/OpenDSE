@@ -22,13 +22,16 @@ BIN_DIR         =  $(DSE_LIB_ROOT)/out/bin
 OBJ_DIR         =  $(DSE_LIB_ROOT)/out/obj
 
 CC              =  gcc
-OPENDSE_BACKEND =  alsa
+OPENDSE_BACKEND =? oss
 
 ifeq ($(OPENDSE_BACKEND),alsa)
 C_BACKEND       = -DUNIX_ALSA
 LD_LIBS         = -lasound
-else
-C_BACKEND       = -DUNIX_OSS
+endif
+
+ifeq ($(OPENDSE_BACKEND),pulseaudio)
+C_BACKEND       = -DUNIX_PULSEAUDIO
+LD_LIBS         = -lpulse -lpulse-simple
 endif
 
 ifeq ($(OPENDSE_LEGACY),true)
@@ -50,6 +53,7 @@ OBJECTS         =  $(OBJ_DIR)/outdev.o \
                    $(OBJ_DIR)/parser.o \
                    $(OBJ_DIR)/riffpars.o \
                    $(OBJ_DIR)/alsawrap.o \
+                   $(OBJ_DIR)/pa_wrap.o \
                    $(OBJ_DIR)/dseunix.o \
                    $(OBJ_DIR)/opendse.o
 
