@@ -130,7 +130,6 @@ dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 
 dse_result _dse_alloc_audio(DSE_MMIO* mmio) {
 	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
-	uchar_t* inbuf         = mmio->_i->inbuf;
 
 	switch(_dse_frontend) {
 		case DSE_FRONTEND_LINUX_ALSA:
@@ -148,9 +147,13 @@ dse_result _dse_alloc_audio(DSE_MMIO* mmio) {
 	_dse_free_frames = 32;
 	_dse_frames_count = 32;
 
-	inbuf   = (uchar_t*)malloc(
+	mmio->_i->inbuf   = (uchar_t*)malloc(
                             _dse_frame_samples * sample_size * sizeof(uchar_t)
                         );
+                        
+    mmio->_i->inbuf_size        = frame_size;
+	mmio->audio.frame_samples   = _dse_frame_samples;
+	
 	return DSE_OK;
 }
 
@@ -225,9 +228,6 @@ dse_result _dse_decode_audio2(DSE_MMIO* mmio, ulong_t offset) {
 	#endif
 	
 	fseek(mmio->filesrc, offset, SEEK_SET);
-
-	mmio->_i->inbuf_size        = frame_size;
-	mmio->audio.frame_samples   = _dse_frame_samples;
 
 	mmio->bytes_read += fread(inbuf, 1, frame_size, mmio->filesrc);
 	
