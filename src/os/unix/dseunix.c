@@ -35,6 +35,7 @@
 #include <os/unix/dseunix.h>
 #include <devices/frontend.h>
 #include <math.h>
+#include <stdlib.h>
 
 dse_frontend_t _dse_frontend = DSE_FRONTEND_AUTO;
 
@@ -129,6 +130,7 @@ dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 }
 
 dse_result _dse_alloc_audio(DSE_MMIO* mmio) {
+	uint_t   frame_size    = _dse_frame_samples * sample_size;
 	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
 
 	switch(_dse_frontend) {
