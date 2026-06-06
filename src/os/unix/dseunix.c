@@ -130,8 +130,8 @@ dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 }
 
 dse_result _dse_alloc_audio(DSE_MMIO* mmio) {
-	uint_t   frame_size    = _dse_frame_samples * sample_size;
 	uint_t   sample_size   = (mmio->audio.bit_depth / 8) * mmio->audio.channels;
+	uint_t   frame_size    = _dse_frame_samples * sample_size;
 
 	switch(_dse_frontend) {
 		case DSE_FRONTEND_LINUX_ALSA:
