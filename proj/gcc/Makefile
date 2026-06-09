@@ -22,16 +22,21 @@ BIN_DIR         =  $(DSE_LIB_ROOT)/out/bin
 OBJ_DIR         =  $(DSE_LIB_ROOT)/out/obj
 
 CC              =  gcc
-OPENDSE_BACKEND =? oss
+OPENDSE_BACKEND =? pulseaudio
 
 ifeq ($(OPENDSE_BACKEND),alsa)
 C_BACKEND       = -DUNIX_ALSA
-LD_LIBS         = -lasound
+LD_LIBS         = -lasound -lm
 endif
 
 ifeq ($(OPENDSE_BACKEND),pulseaudio)
 C_BACKEND       = -DUNIX_PULSEAUDIO
-LD_LIBS         = -lpulse -lpulse-simple
+LD_LIBS         = -lpulse -lpulse-simple -lm
+endif
+
+ifeq ($(OPENDSE_BACKEND),oss)
+C_BACKEND       = -DUNIX_OSS
+LD_LIBS         = -lm
 endif
 
 ifeq ($(OPENDSE_LEGACY),true)
@@ -40,10 +45,18 @@ else
 C_LEGACY        = -fno-optimize-sibling-calls
 endif
 
-ifeq ($(OPENDSE_DEBUG),true)
-C_FLAGS         =  -O0 -fPIC -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF $(C_BACKEND) $(C_LEGACY) -g3 -fno-omit-frame-pointer
+ifeq ($(OPENDSE_AOUT),true)
+C_PIE           = -fno-pic
+C_AOUT          = -DUNIX_AOUT
+CC_LIB          = -lgcc
 else
-C_FLAGS         =  -O2 -fPIC -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF $(C_BACKEND) $(C_LEGACY)
+C_PIE           = -fPIC
+endif
+
+ifeq ($(OPENDSE_DEBUG),true)
+C_FLAGS         =  -O0 $(C_PIE) -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF $(C_BACKEND) $(C_LEGACY) $(C_AOUT) -g3 -fno-omit-frame-pointer
+else
+C_FLAGS         =  -O2 $(C_PIE) -DOPENDSE_LIB -DUNIX -DHAVE_VPRINTF $(C_BACKEND) $(C_LEGACY) $(C_AOUT)
 endif
 
 SOURCES         =  $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.c))
@@ -54,6 +67,7 @@ OBJECTS         =  $(OBJ_DIR)/outdev.o \
                    $(OBJ_DIR)/riffpars.o \
                    $(OBJ_DIR)/alsawrap.o \
                    $(OBJ_DIR)/pa_wrap.o \
+                   $(OBJ_DIR)/osswrap.o \
                    $(OBJ_DIR)/dseunix.o \
                    $(OBJ_DIR)/opendse.o
 
@@ -85,7 +99,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/utils/%.c
 	$(CC) $(C_FLAGS) -I$(INC_DIR) -c $< -o $@
 
 $(BIN_DIR)/lib$(PROJECT).so: $(OBJECTS)
-	$(CC) $(LD_ARCH) -shared $(LD_LIBS) -o $@ $(OBJECTS) $(LD_FLAGS)
+	$(CC) $(LD_ARCH) -shared -o $@ $(OBJECTS) $(LD_FLAGS) $(CC_LIB) $(LD_LIBS) 
 
 $(BIN_DIR)/lib$(PROJECT).a: $(OBJECTS)
 	ar rcs $@ $(OBJECTS)

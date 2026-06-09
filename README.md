@@ -13,7 +13,7 @@ _**Current status:**_ Public Alpha Testing, WIP
   depending on the OS, OpenDSE consumes on **average from 400 kB to 2 MB** of RAM and **up to 5%** of the CPU load
 
 * **Multiple audio frontends** \
-  supports WASAPIv2 and WaveOut for Windows, ALSA for Linux and PulseAudio for UNIX-like operating systems
+supports WASAPIv2 and WaveOut for Windows / OSS, ALSA and PulseAudio for UNIX-like operating systems, including Linux
 
 * **Backward compatibility** \
   Windows NT 3.1* or above, Linux 2.4 with ALSA 0.9.1** or above is required

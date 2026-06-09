@@ -50,6 +50,10 @@
     #include "pa_wrap.h"
 #endif
 
+#ifdef UNIX_OSS
+    #include "osswrap.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
