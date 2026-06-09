@@ -10,7 +10,7 @@ if "%OPENDSE_CC_TARGET%"=="" IF "%1"=="" (
 	echo.
 	echo [ vc2] Microsoft Visual C++  2.0 - 2003
 	echo [ vc8] Microsoft Visual C++ 2005 - 2013
-        echo [vc14] Microsoft Visual C++ 2015 - 2026
+	echo [vc14] Microsoft Visual C++ 2015 - 2026
 	echo.
 	set /P OPENDSE_CC_TARGET=Choose your MSVC target version [vc2, vc8, vc14]: 
 ) else (
