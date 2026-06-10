@@ -49,7 +49,7 @@ DSE_MMIO* 		stdmmio;
 dse_result dse_get_version(DSEVERSION* version) {
 	version->major = 0;
 	version->minor = 0;
-	version->patch = 1;
+	version->patch = 2;
 	return DSE_OK;
 }
 
