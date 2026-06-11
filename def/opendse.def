@@ -1,7 +1,8 @@
 LIBRARY				"OpenDSE"
 
 EXPORTS 
-    dse_get_version
+	dse_get_version
+	dse_select_frontend
 	dse_open_input
 	dse_close_input
 	dse_open_outdev
