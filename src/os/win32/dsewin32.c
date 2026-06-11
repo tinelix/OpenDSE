@@ -55,8 +55,6 @@ int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 int _dse_select_frontend(dse_frontend_t frontend) {
 	int result = DSE_OUTDEV_UNSUPPORTED_BACKEND;
 	
-	outdev->_i = malloc(sizeof(DSE_IDEVICE));
-	
 	switch(frontend) {
 		case DSE_FRONTEND_AUTO:
 			#ifdef WIN32_WASAPI
@@ -97,6 +95,8 @@ dse_result _dse_open_outdev(DSE_OUTDEV* outdev, DSE_MMIO* mmio) {
 	double force_fpi_load = sqrt(4);
 
 	int result = DSE_OUTDEV_UNSUPPORTED_BACKEND;
+	
+	outdev->_i = malloc(sizeof(DSE_IDEVICE));
 
 	#ifdef WIN32_WASAPI
 			_dse_free_frames = 8;
